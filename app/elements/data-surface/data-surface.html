@@ -1,0 +1,125 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="data-surface"></dom-module>
+
+<script src="../../scripts/dataSurface.js"></script>
+<script>
+  'use strict';
+
+  class Actionable {
+    constructor(id, title) {
+      this.id = id;
+      this.title = title;
+      this.text = '';
+    }
+  }
+  
+  (function() {
+    new Polymer({
+      is: 'data-surface',
+      
+      /**
+       * Fired when we are ready to recieve data from backend.
+       *
+       * @event dataSurfaceReady
+       */
+      
+      properties: {
+        /**
+         * Actionables.
+         * @type {*}
+         */
+        actionables: {
+          type: Array,
+          notify: true
+        },
+        
+        selectedActionable: {
+          type: Object,
+          notify: true
+        },
+        
+        hashValue: {
+          type: String
+        }
+      },
+       
+      setHashValue: function() {
+        var hash = window.location.hash;
+        if (hash.length < 3) {
+          return false;
+        }
+        this.hashValue = hash.substring(2, hash.length);
+        return true;
+      },
+      
+      attached: function() {
+        this.fire('dataSurfaceReady', {bubbles: false});
+        console.log('Data surface is attached');
+        if (this.setHashValue()) {
+          console.log('We have an actionable to load ' + this.hashValue);
+          this.loadActionable();
+        }
+      },
+      
+      loadActionable: function() {
+        for (let a of this.actionables) {
+          if (a.id === this.hashValue) {
+            this.selectedActionable = a;
+            break;
+          }
+        }
+      },
+      
+      _getId: function() {
+        let id;
+        if (window.crypto === undefined) {
+          id = Math.random() + '';
+          id = id.substring(2);
+        } else {
+          id = window.crypto.getRandomValues(new Uint32Array(2));
+          id = `${id[0]}${id[1]}`;
+        }
+        return id;
+      },
+      
+      getActionables: function() {
+        return this.actionables;
+      },
+      
+      setActionables: function(actionables) {
+        this.actionables = actionables;
+      },
+
+      // Actions
+      createActionable: function(name) {
+        let a = new Actionable(this._getId(), name);
+        this.push('actionables', a);
+        this.set('selectedActionable', a);
+        window.location.hash = `!${a.id}`;
+        // Hook for backend
+        this.fire('createdActionable', {actionable: a, bubbles: false});
+      },
+        
+      deleteActionable: function(id) {
+        if (id === this.selectedActionable.id) {
+          this.arrayDelete('actionables', this.selectedActionable);
+          this.set('selectedActionable', null);
+          window.history.back();
+          // Hook for backend
+          this.fire('deletedActionable', {id: id, bubbles: false});
+        } else {
+          console.log('deleteActionable, id mismatch! id:' + id + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
+        }
+      }
+        
+    });
+  })();
+</script>
+
+

@@ -1,0 +1,39 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="app-actions-panel">
+  <template>
+    <style>
+      :host {
+        background-color: var(--paper-grey-50);
+      }
+      
+    </style>
+    
+    <div id="cards">
+    </div>
+
+  </template>
+  
+  <script>
+    (function() {
+      'use strict';
+      
+      new Polymer({
+        is: 'app-actions-panel',
+
+        properties: {
+          user: {
+            type: String,
+            value: 'Anonymous',
+            notify: true
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>

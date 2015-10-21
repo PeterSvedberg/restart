@@ -1,0 +1,160 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="actionables-list">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        height: 100%;
+        --iron-list-items-container: {
+          /* styles the container for the items*/
+        };
+      }
+      
+      paper-scroll-header-panel {
+        @apply(--layout-flex);        
+      }
+        
+      .actionables-toolbar {
+        background-color: var(--dark-primary-color);
+      }
+      
+      .actionables-title {
+        @apply(--paper-font-title);
+      }
+
+      .item {
+        @apply(--layout-horizontal);
+        padding: 8px 0px 8px 16px;
+        background-color: var(--primary-background-color);
+        border-bottom: 1px solid var(--divider-color);
+      }
+  
+      .item:focus {
+        outline: 0;
+      }
+
+      .item.selected {
+        background-color: var(--selected-background-color);
+      }
+
+      .actionable-name {
+        @apply(--layout-flex);
+        color: var(--primary-text-color);
+        font-size: 18px;
+        text-decoration: none;
+      }
+      
+      .delete {
+        display: none;
+      }
+      
+      .item.selected .delete {
+        margin-right: 16px;
+        color: rgba(0, 0, 0, 0.56);
+        display: inline;
+      }
+
+      .item.selected .delete:hover {
+        color: rgba(0, 0, 0, 0.87);
+      }
+      
+    </style>
+
+    <paper-scroll-header-panel scrollAwayTopbar condenses>
+      <paper-toolbar class="actionables-toolbar">
+        <div class="actionables-title">Actionables</div>
+        <span class="flex"></span>
+        <paper-icon-button icon="search"></paper-icon-button>
+      </paper-toolbar>
+      <iron-list id="actionablesList" items="{{actionables}}" as="actionable" selection-enabled selected-item="{{selectedActionable}}">
+        <template>
+          <div>
+            <div id$="[[_computeId(index)]]" tabindex="0" class$="[[_computeClass(selected)]]">
+              <span class="actionable-name">[[actionable.title]]</span>
+              <iron-icon icon="remove" class="delete" on-tap="onDelete"></iron-icon>
+            </div>
+          </div>
+        </template>
+      </iron-list>
+    </paper-scroll-header-panel>
+  </template>
+  
+  <script>
+    (function() {
+      'use strict';
+  
+      new Polymer({
+        is: 'actionables-list',
+  
+        properties: {
+          actionables: {
+            type: Array,
+            notify: true,
+            observer: '_actionablesChanged'
+          },
+  
+          selectedActionable: {
+            type: Object,
+            notify: true,
+            observer: '_selectedActionableChanged'
+          },
+          
+          lastIndex: {
+            type: Number,
+            value: -1
+          }
+          
+        },
+        
+        _actionablesChanged: function() {
+          console.log('_actionablesChanged');
+        },
+        
+        _computeId: function(index) {
+          return `acl${index}`;
+        },
+        
+        _computeClass: function(isSelected) {
+          var classes = 'item';
+          if (isSelected) {
+            classes += ' selected';
+          }
+          return classes;
+        },
+        
+        onDelete: function(e) {
+          e.stopPropagation();
+          this.fire('deleteActionable', {'id': this.selectedActionable.id});
+        },
+
+        _toggleSelected: function(isAdd) {
+          if (this.lastIndex > -1) {
+            var item = document.getElementById(this._computeId(this.lastIndex));
+            if (item) {
+              Polymer.Base.toggleClass('selected', isAdd, item);
+            }
+          }
+        },
+
+        _selectedActionableChanged: function() {
+          if (!this.actionables || !this.selectedActionable) {
+            return;
+          }
+          console.log('_selectedActionableChanged ' + this.selectedActionable.id);
+          // remove selected class in case change is driven by data binding
+          this._toggleSelected(false);
+          this.lastIndex = this.$.actionablesList.items.indexOf(this.selectedActionable);
+          // add selected class in case change is driven by data binding
+          this._toggleSelected(true);
+          window.location.hash = `!${this.selectedActionable.id}`;
+        }
+     });
+    })();
+  </script>
+</dom-module>

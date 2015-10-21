@@ -1,0 +1,154 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<style is="custom-style">
+  /*
+   See https://www.polymer-project.org/1.0/docs/devguide/styling.html#xscope-styling-details
+   for further information on custom CSS properties.
+  */
+  /* Application theme */
+  :root {
+    --dark-background-color: #e2e2e2;
+    --primary-background-color: #f4f4f4;
+    --selected-background-color: #e8e8e8;
+    --dark-primary-color: #00796b;
+    --default-primary-color: #009688;
+    --light-primary-color: #b2dfdb;
+    --accent-color: #ff6d00;
+    --text-primary-color: #ffffff; /*text/icons*/
+    --button-primary-color: #727272; /*text/icons*/
+    --primary-text-color: #212121;
+    --secondary-text-color: #727272;
+    --disabled-text-color: #bdbdbd;
+    --divider-color: #b6b6b6;
+
+    /* Layout */
+    --small-navigation: {
+      height: 100%;
+      width: 0;
+      transition: all 0.3s ease-out 0.02s;        
+    }
+    --medium-navigation: {
+      height: 100%;
+      max-width: 320px;
+      width: 33%;
+      margin-top: 8px;
+      margin-left: 16px;
+      transition: all 0.3s ease-out 0.02s;
+    }
+    --standard-navigation: {
+      height: 100%;
+      max-width: 320px;
+      width: 33%;
+      margin-top: 16px;
+      margin-left: 24px;
+      transition: all 0.3s ease-out 0.02s;
+    }
+    --large-navigation: {
+      height: 100%;
+      max-width: 400px;
+      width: 33%;
+      margin-top: 24px;
+      margin-left: 40px;
+      transition: all 0.3s ease-out 0.02s;        
+    }
+    --small-navigation-toggle: {
+      width: 100%;
+    }
+    --standard-navigation-toggle: {
+      width: 0;
+      margin-left: 0;
+    }
+    --large-navigation-toggle: {
+      width: 0;
+      margin-left: 0;
+    }
+    --medium-actionable: {
+      @apply(--layout-flex);
+      height: 100%;
+      margin: 8px 16px 0 16px;
+    }
+    --standard-actionable: {
+      @apply(--layout-flex);
+      height: 100%;
+      margin: 16px 24px 0 24px;
+    }
+    --large-actionable: {
+      @apply(--layout-flex);
+      height: 100%;
+      margin: 24px 40px 0 40px;
+    }
+    --medium-more-actions: {
+      height: 100%;
+      max-width: 320px;
+      width: 0;
+      transition: all 0.3s ease-out 0.02s;        
+      margin-top: 8px;
+      margin-right: 0;
+    }
+    --standard-more-actions: {
+      height: 100%;
+      max-width: 320px;
+      width: 0;
+      transition: all 0.3s ease-out 0.02s;        
+      margin-top: 16px;
+      margin-right: 0;
+    }
+    --large-more-actions: {
+      height: 100%;
+      max-width: 400px;
+      width: 33%;
+      margin-top: 24px;
+      margin-right: 40px;
+      transition: all 0.3s ease-out 0.02s;        
+    }
+    --standard-more-actions-toggle: {
+      width: 33%;
+      margin-right: 24px;
+    }
+    --large-more-actions-toggle: {
+      width: 0;
+      margin-right: 0;
+    }
+  }
+
+  /*The breakpoints used in this app. Sequence matters, i.e. those 
+   *specifying orientation should come after those which do not. */
+  /* s */
+  @media all and (min-width: 0px) and (max-width: 600px) { }
+  /* m */
+  @media all and (min-width: 601px) and (max-width: 1280px) { }
+  /* l */
+  @media all and (min-width: 1281px) and (max-width: 1440px) { }
+  /* xl */
+  @media all and (min-width: 1441px) and (max-width: 1600px) { }
+  /* xxl */
+  @media all and (min-width: 1601px) and (max-width: 1920px) { }
+  /* xxxl */
+  @media all and (min-width: 1921px) { }
+
+  /* smallPortrait */
+  @media all and (max-width: 360px) and (orientation: portrait) { }
+  /* mediumPortrait */
+  @media all and (min-width: 361px) and (max-width: 600px) and (orientation: portrait) { }
+  /* largePortrait */
+  @media all and (min-width: 601px) and (max-width: 840px) and (orientation: portrait) { }
+  /* xlPortrait */
+  @media all and (min-width: 841px) and (orientation: portrait) { }
+  
+  /* smallLandscape */
+  @media all and (max-width: 480px) and (orientation: landscape) { }
+  /* mediumLandscape */
+  @media all and (min-width: 481px) and (max-width: 600px) and (orientation: landscape) { }
+  /* largeLandscape */
+  @media all and (min-width: 601px) and (max-width: 960px) and (orientation: landscape) { }
+  /* xlLandscape */
+  @media all and (min-width: 961px) and (max-width: 1280px) and (orientation: landscape) { }
+  
+</style>

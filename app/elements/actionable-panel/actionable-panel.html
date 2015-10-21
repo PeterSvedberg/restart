@@ -1,0 +1,74 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="actionable-panel">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        height: 100%;
+        
+        --iron-autogrow-textarea: {
+          border-bottom: 1px solid grey;
+        }
+        
+      }
+      
+      iron-autogrow-textarea {
+        border: none;
+      }
+      
+      paper-scroll-header-panel {
+        @apply(--layout-flex);        
+      }
+      
+      .panel {
+        @apply(--layout-flex);        
+        margin: 16px;
+        color: var(--primary-text-color);
+      }
+
+      .main-toolbar {
+        background-color: var(--default-primary-color);
+      }
+      
+      .actionable-title {
+        @apply(--paper-font-title);
+      }
+      
+    </style>
+    
+    <paper-scroll-header-panel scrollAwayTopbar condenses>
+      <paper-toolbar class="main-toolbar">
+        <div class="actionable-title">{{actionable.title}}</div>
+        <span class="flex"></span>
+        <paper-icon-button icon="add"></paper-icon-button>
+      </paper-toolbar>  
+      <div class="panel">
+        <iron-autogrow-textarea bind-value="{{actionable.text}}"></iron-autogrow-textarea>
+      </div>
+    </paper-scroll-header-panel>
+    
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    new Polymer({
+      is: 'actionable-panel',
+
+      properties: {
+        actionable: {
+          type: Object,
+          notify: true
+        }
+      },
+      
+    });
+  })();
+  </script>
+</dom-module>
