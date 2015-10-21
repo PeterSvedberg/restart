@@ -33,7 +33,7 @@ Copyright (c) 2015 Peter Svedberg.
         </template>`;
       app = document.querySelector('#app');
       
-      // remove splash screen
+      // remove splash screen and loading class
       var splash = document.querySelector('#splash');
       splash.addEventListener('transitionend', splash.remove);
       document.body.classList.remove('loading');
