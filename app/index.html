@@ -43,12 +43,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="apple-mobile-web-app-title" content="operat.nl">
   <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
 
+  <style>
+    body.loading #splash {
+      opacity: 1;
+    }
+    #splash {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: opacity 300ms cubic-bezier(0,0,0.2,1);
+      opacity: 0;
+      z-index: 1;
+      background: url(images/touch/icon-128x128.png) no-repeat center center;
+      background-color: #009688;
+    }
+  </style>
 </head>
 
-<body> 
+<body class="loading"> 
   <span id="browser-sync-binding"></span>
+  <div id="splash"></div>
+  <div id="container"></div>
   <!-- App loading is handled by app.js -->
-  <script src="scripts/app.js"></script>
+  <script src="scripts/app.js" async></script>
 </body>
 
 </html>

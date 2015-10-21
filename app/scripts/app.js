@@ -15,7 +15,7 @@ Copyright (c) 2015 Peter Svedberg.
     importElements.href = 'elements/elements.html';
     importElements.onload = () => {
       console.log('elements loaded');
-      document.body.innerHTML = `    
+      document.querySelector('#container').innerHTML = `    
         <template id="app" is="dom-bind">
           <app-view class="flex"></app-view>         
           <paper-toast id="caching-complete"
@@ -32,6 +32,12 @@ Copyright (c) 2015 Peter Svedberg.
           </platinum-sw-register>
         </template>`;
       app = document.querySelector('#app');
+      
+      // remove splash screen
+      var splash = document.querySelector('#splash');
+      splash.addEventListener('transitionend', splash.remove);
+      document.body.classList.remove('loading');
+      
       console.log('app loaded');
       
       app.displayInstalledToast = () => {
