@@ -20,20 +20,23 @@ Copyright (c) 2015 Peter Svedberg.
   </template>
   
   <script>
+    'use strict';
+    
     (function() {
-      'use strict';
-      
-      new Polymer({
-        is: 'app-actions-panel',
-
-        properties: {
-          user: {
-            type: String,
-            value: 'Anonymous',
-            notify: true
-          }
-        }
-      });
+      class AppActionsPanel {
+        beforeRegister() {
+          this.is = 'app-actions-panel';
+  
+          this.properties = {
+            user: {
+              type: String,
+              value: 'Anonymous',
+              notify: true
+            }
+          };
+        }        
+      }
+      new Polymer(AppActionsPanel);
     })();
   </script>
 </dom-module>

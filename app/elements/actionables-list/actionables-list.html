@@ -87,62 +87,61 @@ Copyright (c) 2015 Peter Svedberg.
   
   <script>
     (function() {
-      'use strict';
+      class ActionablesList {
+        beforeRegister() {
+          this.is = 'actionables-list';
   
-      new Polymer({
-        is: 'actionables-list',
-  
-        properties: {
-          actionables: {
-            type: Array,
-            notify: true,
-            observer: '_actionablesChanged'
-          },
-  
-          selectedActionable: {
-            type: Object,
-            notify: true,
-            observer: '_selectedActionableChanged'
-          },
-          
-          lastIndex: {
-            type: Number,
-            value: -1
-          }
-          
-        },
+          this.properties = {
+            actionables: {
+              type: Array,
+              notify: true,
+              observer: '_actionablesChanged'
+            },
+    
+            selectedActionable: {
+              type: Object,
+              notify: true,
+              observer: '_selectedActionableChanged'
+            },
+            
+            lastIndex: {
+              type: Number,
+              value: -1
+            }       
+          };
+        }
         
-        _actionablesChanged: function() {
+        _actionablesChanged() {
           console.log('_actionablesChanged');
-        },
+        }
         
-        _computeId: function(index) {
+        _computeId(index) {
           return `acl${index}`;
-        },
+        }
         
-        _computeClass: function(isSelected) {
+        _computeClass(isSelected) {
           var classes = 'item';
           if (isSelected) {
             classes += ' selected';
           }
           return classes;
-        },
+        }
         
-        onDelete: function(e) {
+        onDelete(e) {
           e.stopPropagation();
           this.fire('deleteActionable', {'id': this.selectedActionable.id});
-        },
+        }
 
-        _toggleSelected: function(isAdd) {
+        _toggleSelected(isAdd) {
           if (this.lastIndex > -1) {
             var item = document.getElementById(this._computeId(this.lastIndex));
             if (item) {
               Polymer.Base.toggleClass('selected', isAdd, item);
             }
           }
-        },
+        }
 
-        _selectedActionableChanged: function() {
+        _selectedActionableChanged() {
           if (!this.actionables || !this.selectedActionable) {
             return;
           }
@@ -154,7 +153,8 @@ Copyright (c) 2015 Peter Svedberg.
           this._toggleSelected(true);
           window.location.hash = `!${this.selectedActionable.id}`;
         }
-     });
+      }
+      new Polymer(ActionablesList);
     })();
   </script>
 </dom-module>

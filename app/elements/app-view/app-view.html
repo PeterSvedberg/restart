@@ -570,75 +570,64 @@ Copyright (c) 2015 Peter Svedberg.
   </template>
 
   <script>
+    'use strict';
+    
     (function() {
-      'use strict';
+      class AppView {
+        beforeRegister() {
+          this.is = 'app-view';
   
-      new Polymer({
-        is: 'app-view',
-        
-        behaviors: [
-          Polymer.IronResizableBehavior
-        ],
-        
-        properties: {
-          actionables: {
-            type: Array,
-            notify: true,
-            observer: '_actionablesChanged'
-          },
-          
-          selectedActionable: {
-            type: Object,
-            notify: true,
-            observer: '_selectedActionableChanged'
-          },
-          
-          isOneColumn: false,
-          isTwoColumn: false,
-          isThreeColumn: false,
-
-          s: false,
-          m: false,
-          l: false,
-          xl: false,
-          xxl: false,
-          xxxl: false,
-          
-          smallPortrait: false,
-          mediumPortrait: false,
-          largePortrait: false,
-          xlPortrait: false,
+          this.properties = {
+            actionables: {
+              type: Array,
+              notify: true,
+              observer: '_actionablesChanged'
+            },
             
-          smallLandscape: false,
-          mediumLandscape: false,
-          largeLandscape: false,
-          xlLandscape: false,
+            selectedActionable: {
+              type: Object,
+              notify: true,
+              observer: '_selectedActionableChanged'
+            },
+            
+            isOneColumn: false,
+            isTwoColumn: false,
+            isThreeColumn: false,
+  
+            s: false,
+            m: false,
+            l: false,
+            xl: false,
+            xxl: false,
+            xxxl: false,
+            
+            smallPortrait: false,
+            mediumPortrait: false,
+            largePortrait: false,
+            xlPortrait: false,
+              
+            smallLandscape: false,
+            mediumLandscape: false,
+            largeLandscape: false,
+            xlLandscape: false,
+            
+            navOpen: false,          
+            moreActionsOpen: false,
+            wasNavOpen: false,          
+            wasMoreActionsOpen: false,
+            isTogglingNav: false,          
+            isTogglingMoreActions: false,
+            
+            layoutHeight: 0
+          };
           
-          navOpen: false,          
-          moreActionsOpen: false,
-          wasNavOpen: false,          
-          wasMoreActionsOpen: false,
-          isTogglingNav: false,          
-          isTogglingMoreActions: false,
-          
-          layoutHeight: 0
-        },
+        }
         
-        listeners: {
-          'iron-resize': '_onIronResize',
-        },
-        
-        _onIronResize: function() {
-          console.log('_onIronResize');
-          this._calcDimensions();
-          this._logMedia();
-        },
-        
-        _actionablesChanged: function() {
+        _actionablesChanged() {
           console.log('_actionablesChanged');          
-        },
+        }
         
-        _selectedActionableChanged: function() {
+        _selectedActionableChanged() {
           if (this.selectedActionable === null) {
             return;
           }
@@ -646,23 +635,26 @@ Copyright (c) 2015 Peter Svedberg.
           if (this.isOneColumn && this.navOpen) {
             this._toggleNavigation();
           }
-        },
+        }
         
-        attached: function() {
+        attached() {
+          addEventListener('resize', () => {
+            this._calcDimensions();
+          });
           this._calcDimensions();
           this.navOpen = !this.isOneColumn;
           this.moreActionsOpen = this.isThreeColumn;
           this._logMedia();
-        },
+        }
         
-        _calcDimensions: function() {
+        _calcDimensions() {
           this.isOneColumn = this.s || this.smallPortrait || this.mediumPortrait || this.smallLandscape || this.mediumLandscape;
           this.isTwoColumn = this.m || this.l || this.largePortrait || this.xlPortrait || this.largeLandscape || this.xlLandscape;
           this.isThreeColumn = this.xl || this.xxl || this.xxxl;
           this._setHeight();
-        },
+        }
         
-        _logMedia: function() {
+        _logMedia() {
           console.log('isOneColumn:' + this.isOneColumn); 
           console.log('isTwoColumn:' + this.isTwoColumn); 
           console.log('isThreeColumn:' + this.isThreeColumn); 
@@ -683,20 +675,20 @@ Copyright (c) 2015 Peter Svedberg.
           console.log('mediumLandscape:' + this.mediumLandscape);
           console.log('largeLandscape:' + this.largeLandscape);
           console.log('xlLandscape:' + this.xlLandscape);
-        },
+        }
             
-        _setHeight: function() {
+        _setHeight() {
           if (!this.$.main) {
             return;
           }
           this.layoutHeight = this.$.main.offsetHeight;
-          console.log('this.$.main.offsetHeight:' + this.layoutHeight); 
+          // console.log('this.$.main.offsetHeight:' + this.layoutHeight); 
           var height = 'height:' + this._computeHeight() + 'px;';
-          console.log('height:' + height); 
+          // console.log('height:' + height); 
           this.$.navigation.setAttribute('style', height);
           this.$.actionable.setAttribute('style', height);
           this.$.moreActions.setAttribute('style', height);
-        },
+        }
         
         _computeHeight() {
           var h = this.layoutHeight;
@@ -711,16 +703,16 @@ Copyright (c) 2015 Peter Svedberg.
           } else if (this.isThreeColumn) {
             return h -= 32;
           }
-        },
+        }
         
-        _removeToggleNavigationClass: function() {
+        _removeToggleNavigationClass() {
           // navigation is initially closed in one column layout (add class to open)
           // otherwise open (add class to close)
           var remove = this.isOneColumn ? !this.navOpen : this.navOpen;
           return remove;
-        },
+        }
         
-        _toggleNavigation: function() {
+        _toggleNavigation() {
           this.isTogglingNav = true;
           if (this._shouldToggleMoreActions()) {
             this._toggleMoreActions();
@@ -728,9 +720,9 @@ Copyright (c) 2015 Peter Svedberg.
           Polymer.Base.toggleClass('toggle-navigation', this._removeToggleNavigationClass(), this.$.navigation);
           this.isTogglingNav = false;
           this.navOpen = !this.navOpen;
-        },
+        }
         
-        _shouldToggleMoreActions: function() {
+        _shouldToggleMoreActions() {
           if (this.isTogglingMoreActions) {
             // not more than once
             return false;
@@ -746,16 +738,16 @@ Copyright (c) 2015 Peter Svedberg.
             return true;
           }
           return false;
-        },
+        }
         
-        _removeToggleMoreActionsClass: function() {
+        _removeToggleMoreActionsClass() {
           // more actions is initially open in three column layout (add class to close)
           // otherwise closed (add class to open)
           var remove = this.isThreeColumn ? this.moreActionsOpen : !this.moreActionsOpen;
           return remove;
-        },
+        }
         
-        _toggleMoreActions: function() {
+        _toggleMoreActions() {
           this.isTogglingMoreActions = true;
           if (this._shouldToggleNavigation()) {
             this._toggleNavigation();
@@ -763,9 +755,9 @@ Copyright (c) 2015 Peter Svedberg.
           Polymer.Base.toggleClass('toggle-more-actions', this._removeToggleMoreActionsClass(), this.$.moreActions);
           this.isTogglingMoreActions = false;
           this.moreActionsOpen = !this.moreActionsOpen;
-        },
+        }
         
-        _shouldToggleNavigation: function() {
+        _shouldToggleNavigation() {
           if (this.isTogglingNav) {
             // not more than once
             return false;
@@ -781,35 +773,35 @@ Copyright (c) 2015 Peter Svedberg.
             return true;
           }
           return false;
-        },
+        }
         
-        _createActionable: function() {
+        _createActionable() {
           Polymer.Base.toggleClass('show', true, this.$.createActionableEditor);
-        },
+        }
         
-        _cancel: function() {
+        _cancel() {
           this.$.actionableName.value = '';
           Polymer.Base.toggleClass('show', false, this.$.createActionableEditor);
-        },
+        }
         
-        _doCreate: function() {
+        _doCreate() {
           var name = this.$.actionableName.value;
           this.fire('createActionable', {'name': name});
           this.$.actionableName.value = '';
           Polymer.Base.toggleClass('show', false, this.$.createActionableEditor);
-        },
+        }
   
-        _create: function() {
+        _create() {
           this._doCreate();
-        },
+        }
   
-        _createOnEnter: function(e) {
+        _createOnEnter(e) {
           if (e.keyCode === 13) {
             this._doCreate();
           }
         }
-        
-      });
+      }
+      new Polymer(AppView);
     })();
   </script>
 

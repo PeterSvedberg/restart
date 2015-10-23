@@ -55,25 +55,28 @@ Copyright (c) 2015 Peter Svedberg.
     
   </template>
   <script>
-  (function() {
     'use strict';
-
-    new Polymer({
-      is: 'actionable-panel',
-
-      properties: {
-        actionable: {
-          type: Object,
-          notify: true,
-          observer: '_actionableChanged'
+    
+    (function() {
+      class ActionablePanel {
+        beforeRegister() {
+          this.is = 'actionable-panel';
+  
+          this.properties = {
+            actionable: {
+              type: Object,
+              notify: true,
+              observer: '_actionableChanged'
+            }
+          };
         }
-      },
-      
-      _actionableChanged: function() {
-        console.log('_actionableChanged');
+        
+        _actionableChanged() {
+          console.log('_actionableChanged');
+        }
+        
       }
-      
-    });
-  })();
+      new Polymer(ActionablePanel);
+    })();
   </script>
 </dom-module>

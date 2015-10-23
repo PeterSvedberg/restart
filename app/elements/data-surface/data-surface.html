@@ -20,63 +20,55 @@ Copyright (c) 2015 Peter Svedberg.
   }
   
   (function() {
-    new Polymer({
-      is: 'data-surface',
-      
-      /**
-       * Fired when we are ready to recieve data from backend.
-       *
-       * @event dataSurfaceReady
-       */
-      
-      properties: {
-        /**
-         * Actionables.
-         * @type {*}
-         */
-        actionables: {
-          type: Array,
-          notify: true
-        },
+    class DataSurface {
+      beforeRegister() {
+        this.is = 'data-surface';
         
-        selectedActionable: {
-          type: Object,
-          notify: true
-        },
-        
-        hashValue: {
-          type: String
-        }
-      },
-       
-      setHashValue: function() {
+        this.properties = {
+          actionables: {
+            type: Array,
+            notify: true
+          },
+          
+          selectedActionable: {
+            type: Object,
+            notify: true
+          },
+          
+          hashValue: {
+            type: String
+          }
+        };
+      }
+      
+      setHashValue() {
         var hash = window.location.hash;
         if (hash.length < 3) {
           return false;
         }
         this.hashValue = hash.substring(2, hash.length);
         return true;
-      },
+      }
       
-      attached: function() {
+      attached() {
         this.fire('dataSurfaceReady', {bubbles: false});
         console.log('Data surface is attached');
         if (this.setHashValue()) {
           console.log('We have an actionable to load ' + this.hashValue);
           this.loadActionable();
         }
-      },
+      }
       
-      loadActionable: function() {
+      loadActionable() {
         for (let a of this.actionables) {
           if (a.id === this.hashValue) {
             this.selectedActionable = a;
             break;
           }
         }
-      },
+      }
       
-      _getId: function() {
+      _getId() {
         let id;
         if (window.crypto === undefined) {
           id = Math.random() + '';
@@ -86,27 +78,27 @@ Copyright (c) 2015 Peter Svedberg.
           id = `${id[0]}${id[1]}`;
         }
         return id;
-      },
+      }
       
-      getActionables: function() {
+      getActionables() {
         return this.actionables;
-      },
+      }
       
-      setActionables: function(actionables) {
+      setActionables(actionables) {
         this.actionables = actionables;
-      },
-
+      }
+  
       // Actions
-      createActionable: function(name) {
+      createActionable(name) {
         let a = new Actionable(this._getId(), name);
         this.push('actionables', a);
         this.set('selectedActionable', a);
         window.location.hash = `!${a.id}`;
         // Hook for backend
         this.fire('createdActionable', {actionable: a, bubbles: false});
-      },
+      }
         
-      deleteActionable: function(id) {
+      deleteActionable(id) {
         if (id === this.selectedActionable.id) {
           this.arrayDelete('actionables', this.selectedActionable);
           this.set('selectedActionable', null);
@@ -117,8 +109,8 @@ Copyright (c) 2015 Peter Svedberg.
           console.log('deleteActionable, id mismatch! id:' + id + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
         }
       }
-        
-    });
+    }
+    new Polymer(DataSurface);
   })();
 </script>
 
