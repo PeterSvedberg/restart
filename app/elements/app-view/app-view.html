@@ -536,13 +536,13 @@ Copyright (c) 2015 Peter Svedberg.
     <iron-media-query query="(min-width: 961px) and (max-width: 1280px) and (orientation: landscape)" query-matches="{{xlLandscape}}"></iron-media-query>
     
     <data-surface id="ds" actionables="{{actionables}}" selected-actionable="{{selectedActionable}}"></data-surface>
-    <paper-card id="createActionableEditor" elevation="2" heading="Create Actionable">
+    <paper-card id="createActionableEditor" elevation="2" heading="Create List">
       <div class="card-content">
-        <paper-input id="actionableName" on-keyup="_createOnEnter" autofocus label="Actionable name"></paper-input>
+        <paper-input id="actionableName" on-keyup="_createOnEnter" autofocus label="Name of List"></paper-input>
       </div>
       <div class="card-actions">
-        <paper-button on-click="_cancel"><iron-icon icon="clear"></iron-icon></paper-button>
-        <paper-button on-click="_create"><iron-icon icon="check"></iron-icon></paper-button>
+        <paper-button on-tap="_cancel"><iron-icon icon="clear"></iron-icon></paper-button>
+        <paper-button on-tap="_create"><iron-icon icon="check"></iron-icon></paper-button>
       </div>
     </paper-card>
     <div class="view">
@@ -560,10 +560,10 @@ Copyright (c) 2015 Peter Svedberg.
       </div>
       <div class="footer">
         <div class="action-panel">
-          <paper-fab mini class="action-button" icon="list" on-click="_toggleNavigation"></paper-fab>
-          <paper-fab mini class="action-button fab" icon="add" on-click="_createActionable"></paper-fab>
-          <div class="app-name">operat.nl</div>
-          <paper-fab mini class="action-button" icon="more-vert" on-click="_toggleMoreActions"></paper-fab>
+          <paper-fab mini class="action-button" icon="list" on-tap="_toggleNavigation"></paper-fab>
+          <paper-fab mini class="action-button fab" icon="add" on-tap="_createActionable"></paper-fab>
+          <div class="app-name">listicle</div>
+          <paper-fab mini class="action-button" icon="more-vert" on-tap="_toggleMoreActions"></paper-fab>
         </div>
       </div>
     </div>
