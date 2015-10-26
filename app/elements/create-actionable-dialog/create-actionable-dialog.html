@@ -1,0 +1,105 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="create-actionable-dialog">
+  <template>
+    <style>
+      :host {
+        display: block;
+
+        --paper-card-header-color: var(--text-primary-color);
+        --paper-card-header: {
+          background-color: var(--dark-primary-color);       
+        }
+        --paper-card-header-text: {
+          font-size: 24px;
+          font-weight: 300;
+        }
+        --paper-card-content: {
+          padding: 0 16px 24px 16px;
+        }
+        --paper-card-actions: {
+          color: var(--button-secondary-color);
+        }
+      }
+      
+      #createActionableDialog {
+        z-index: 6;
+        opacity: 1;
+        transition: opacity 0.3s ease-in-out 0.02s;        
+        position: absolute;
+        left: 32px;
+        top: 24px;
+        width: 280px;
+        background-color: var(--primary-background-color);       
+      }
+      
+      #createActionableDialog.hide {
+        opacity: 0;
+      }
+      
+      #actionableName {
+        color: var(--text-primary-color);
+      }
+
+    </style>
+    
+    <paper-card id="createActionableDialog" class="hide" elevation="2" heading="Create List">
+      <div class="card-content">
+        <paper-input id="actionableName" on-keyup="_createOnEnter" autofocus="true" label="Name of List" required error-message="A name is required"></paper-input>
+      </div>
+      <div class="card-actions">
+        <paper-button on-tap="_cancel"><iron-icon icon="clear"></iron-icon></paper-button>
+        <paper-button on-tap="_create"><iron-icon icon="check"></iron-icon></paper-button>
+      </div>
+    </paper-card>
+  </template>
+  
+  <script>
+    'use strict';
+    
+    (function() {
+      class CreateActionableDialog {
+        beforeRegister() {
+          this.is = 'create-actionable-dialog'; 
+        }
+        
+        attached() {
+          Polymer.Base.toggleClass('hide', false, this.$.createActionableDialog);
+        }
+        
+        _cancel() {
+          Polymer.Base.toggleClass('hide', true, this.$.createActionableDialog);
+          this.addEventListener('transitionend', this.remove);
+        }
+        
+        _doCreate() {
+          if (this.$.actionableName.validate()) {
+            var name = this.$.actionableName.value;
+            this.fire('createActionable', {'name': name});
+            Polymer.Base.toggleClass('hide', true, this.$.createActionableDialog);
+            this.addEventListener('transitionend', this.remove); 
+          }          
+        }
+  
+        _create() {
+          this._doCreate();
+        }
+  
+        _createOnEnter(e) {
+          if (e.keyCode === 13) {
+            this._doCreate();
+          }
+        }
+      }
+      
+      new Polymer(CreateActionableDialog);
+        
+      })();
+
+  </script>
+</dom-module>
