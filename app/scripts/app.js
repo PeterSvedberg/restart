@@ -17,8 +17,8 @@ Copyright (c) 2015 Peter Svedberg.
       console.log('elements loaded');
       document.querySelector('#container').innerHTML = `    
         <template id="app" is="dom-bind">
-          <layout-state layout="{{layout}}"></layout-state>
-          <app-view class="flex" layout="{{layout}}"></app-view>         
+          <media-state media="{{media}}"></media-state>
+          <app-view class="flex" media="{{media}}"></app-view>         
           <paper-toast id="caching-complete"
                        duration="6000"
                        text="Caching complete! This app will work offline.">

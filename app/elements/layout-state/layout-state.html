@@ -5,118 +5,162 @@ Copyright (c) 2015 Peter Svedberg.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="layout-state">
-  <template>
-    <style>
-      :host {
-        display: none;
-      }
-    </style>
-    
-    <iron-media-query query="(min-width: 0px) and (max-width: 600px)" query-matches="{{layout.s}}"></iron-media-query>
-    <iron-media-query query="(min-width: 601px) and (max-width: 1280px)" query-matches="{{layout.m}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1281px) and (max-width: 1440px)" query-matches="{{layout.l}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1441px) and (max-width: 1600px)" query-matches="{{layout.xl}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1601px) and (max-width: 1920px)" query-matches="{{layout.xxl}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1921px)" query-matches="{{layout.xxxl}}"></iron-media-query>
-    
-    <iron-media-query query="(min-width: 0px) and (max-width: 360px) and (orientation: portrait)" query-matches="{{layout.smallPortrait}}"></iron-media-query>
-    <iron-media-query query="(min-width: 361px) and (max-width: 600px) and (orientation: portrait)" query-matches="{{layout.mediumPortrait}}"></iron-media-query>
-    <iron-media-query query="(min-width: 601px) and (max-width: 840px) and (orientation: portrait)" query-matches="{{layout.largePortrait}}"></iron-media-query>
-    <iron-media-query query="(min-width: 841px) and (max-width: 1280px) and (orientation: portrait)" query-matches="{{layout.xlPortrait}}"></iron-media-query>
-    
-    <iron-media-query query="(min-width: 0px) and (max-width: 480px) and (orientation: landscape)" query-matches="{{layout.smallLandscape}}"></iron-media-query>
-    <iron-media-query query="(min-width: 481px) and (max-width: 600px) and (orientation: landscape)" query-matches="{{layout.mediumLandscape}}"></iron-media-query>
-    <iron-media-query query="(min-width: 601px) and (max-width: 960px) and (orientation: landscape)" query-matches="{{layout.largeLandscape}}"></iron-media-query>
-    <iron-media-query query="(min-width: 961px) and (max-width: 1280px) and (orientation: landscape)" query-matches="{{layout.xlLandscape}}"></iron-media-query>
+<dom-module id="layout-state"></dom-module>
 
-  </template>
+<script>
+  'use strict';
   
-  <script>
-    'use strict';
-    
-    class Layout {
-      
-      constructor() {
-        this.isOneColumn = false;
-        this.isTwoColumn = false;
-        this.isThreeColumn = false;
-
-        this.s = false;
-        this.m = false;
-        this.l = false;
-        this.xl = false;
-        this.xxl = false;
-        this.xxxl = false;
+  (function() {
+    class LayoutState {
+      beforeRegister() {
+        this.is = 'layout-state';
         
-        this.smallPortrait = false;
-        this.mediumPortrait = false;
-        this.largePortrait = false;
-        this.xlPortrait = false;
+        this.properties = {
+          media: {
+            type: Object,
+            notify: true
+          },
           
-        this.smallLandscape = false;
-        this.mediumLandscape = false;
-        this.largeLandscape = false;
-        this.xlLandscape = false;
-        
-      }      
+          isOneColumn: false,
+          isTwoColumn: false,
+          isThreeColumn: false,
+          navOpen: false,          
+          moreActionsOpen: false,
+          wasNavOpen: false,          
+          wasMoreActionsOpen: false,
+          isTogglingNav: false,          
+          isTogglingMoreActions: false,
+          
+          layoutHeight: 0
+
+        };
+      }
+      
+      attached() {
+        this._calcDimensions();
+        this.navOpen = !this.isOneColumn;
+        this.moreActionsOpen = this.isThreeColumn;
+      }
+      
+      setHeight(height) {
+        this._calcDimensions();
+        this.layoutHeight = height;
+        return 'height:' + this._computeHeight() + 'px;';
+      }
+      
+      toggleNavigation(navigation, moreActions, isIndirect) {
+        if (isIndirect && !(this.isOneColumn && this.navOpen)) {
+          return;
+        }
+        this.isTogglingNav = true;
+        if (this._shouldToggleMoreActions()) {
+          this.toggleMoreActions(navigation, moreActions);
+        }
+        Polymer.Base.toggleClass('toggle-navigation', this._removeToggleNavigationClass(), navigation);
+        this.isTogglingNav = false;
+        this.navOpen = !this.navOpen;
+      }
+      
+      toggleMoreActions(navigation, moreActions) {
+        this.isTogglingMoreActions = true;
+        if (this._shouldToggleNavigation()) {
+          this.toggleNavigation(navigation, moreActions, false);
+        }
+        Polymer.Base.toggleClass('toggle-more-actions', this._removeToggleMoreActionsClass(), moreActions);
+        this.isTogglingMoreActions = false;
+        this.moreActionsOpen = !this.moreActionsOpen;
+      }
+      
+      toString() {
+        console.log('isOneColumn: ' + this.isOneColumn); 
+        console.log('isTwoColumn: ' + this.isTwoColumn); 
+        console.log('isThreeColumn: ' + this.isThreeColumn); 
+        console.log('navOpen: ' + this.navOpen); 
+        console.log('moreActionsOpen: ' + this.moreActionsOpen); 
+        console.log('wasNavOpen: ' + this.wasNavOpen); 
+        console.log('wasMoreActionsOpen: ' + this.wasMoreActionsOpen); 
+        console.log('isTogglingNav: ' + this.isTogglingNav); 
+        console.log('isTogglingMoreActions: ' + this.isTogglingMoreActions); 
+        console.log('layoutHeight: ' + this.layoutHeight); 
+      }
+      
+      _calcDimensions() {
+        this.isOneColumn = this.media.s || this.media.smallPortrait || this.media.mediumPortrait || this.media.smallLandscape || this.media.mediumLandscape;
+        this.isTwoColumn = this.media.m || this.media.l || this.media.largePortrait || this.media.xlPortrait || this.media.largeLandscape || this.media.xlLandscape;
+        this.isThreeColumn = this.media.xl || this.media.xxl || this.media.xxxl;
+      }
+      
+      _computeHeight() {
+        var h = this.layoutHeight;
+        if (this.isOneColumn) {
+          h -= 0; 
+        } else if (this.isTwoColumn) {
+          if (this.media.m || this.media.xlPortrait || this.media.mediumLandscape || this.media.largeLandscape || this.media.xlLandscape) {
+            h -= 16;
+          } else {
+            h -= 24;
+          }
+        } else if (this.isThreeColumn) {
+          h -= 32;
+        }
+        return h;
+      }
+      
+      _removeToggleNavigationClass() {
+        // navigation is initially closed in one column layout (add class to open)
+        // otherwise open (add class to close)
+        var remove = this.isOneColumn ? !this.navOpen : this.navOpen;
+        return remove;
+      }
+      
+      _shouldToggleMoreActions() {
+        if (this.isTogglingMoreActions) {
+          // not more than once
+          return false;
+        }
+        if (this.isThreeColumn) {
+          return false;
+        }
+        if (this.isOneColumn) {
+          return this.moreActionsOpen;
+        }
+        if (this.isTwoColumn && (this.moreActionsOpen || this.wasMoreActionsOpen)) {
+          this.wasMoreActionsOpen = this.moreActionsOpen ? true : false;
+          return true;
+        }
+        return false;
+      }
+      
+      _removeToggleMoreActionsClass() {
+        // more actions is initially open in three column layout (add class to close)
+        // otherwise closed (add class to open)
+        var remove = this.isThreeColumn ? this.moreActionsOpen : !this.moreActionsOpen;
+        return remove;
+      }
+      
+      _shouldToggleNavigation() {
+        if (this.isTogglingNav) {
+          // not more than once
+          return false;
+        }
+        if (this.isThreeColumn) {
+          return false;
+        }
+        if (this.isOneColumn) {
+          return this.navOpen;
+        }
+        if (this.isTwoColumn && (this.navOpen || this.wasNavOpen)) {
+          this.wasNavOpen = this.navOpen ? true : false;
+          return true;
+        }
+        return false;
+      }
+      
     }
     
-    (function() {
-      class LayoutState {
-        beforeRegister() {
-          this.is = 'layout-state';
-          
-          this.properties = {
-            layout: {
-              type: Object,
-              notify: true,
-              value: new Layout()
-            }   
-          };
-        }
-        
-        attached() {
-          addEventListener('resize', () => {
-            this._calcDimensions();
-          });
-          this._calcDimensions();
-        }
-        
-        _calcDimensions() {
-          this.layout.isOneColumn = this.layout.s || this.layout.smallPortrait || this.layout.mediumPortrait || this.layout.smallLandscape || this.layout.mediumLandscape;
-          this.layout.isTwoColumn = this.layout.m || this.layout.l || this.layout.largePortrait || this.layout.xlPortrait || this.layout.largeLandscape || this.layout.xlLandscape;
-          this.layout.isThreeColumn = this.layout.xl || this.layout.xxl || this.layout.xxxl;
-        }
-        
-        toString() {
-          console.log('isOneColumn:' + this.layout.isOneColumn); 
-          console.log('isTwoColumn:' + this.layout.isTwoColumn); 
-          console.log('isThreeColumn:' + this.layout.isThreeColumn); 
-          
-          console.log('s:' + this.layout.s); 
-          console.log('m:' + this.layout.m); 
-          console.log('l:' + this.layout.l); 
-          console.log('xl:' + this.layout.xl);
-          console.log('xxl:' + this.layout.xxl);
-          console.log('xxxl:' + this.layout.xxxl);
-          
-          console.log('smallPortrait:' + this.layout.smallPortrait);
-          console.log('mediumPortrait:' + this.layout.mediumPortrait);
-          console.log('largePortrait:' + this.layout.largePortrait);
-          console.log('xlPortrait:' + this.layout.xlPortrait);
-          
-          console.log('smallLandscape:' + this.layout.smallLandscape);
-          console.log('mediumLandscape:' + this.layout.mediumLandscape);
-          console.log('largeLandscape:' + this.layout.largeLandscape);
-          console.log('xlLandscape:' + this.layout.xlLandscape);
-        }
-        
-      }
+    new Polymer(LayoutState);
       
-      new Polymer(LayoutState);
-        
-    })();
+  })();
 
-  </script>
-</dom-module>
+</script>
+
