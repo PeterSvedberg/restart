@@ -10,7 +10,7 @@ Copyright (c) 2015 Peter Svedberg.
     <style>
       :host {
         @apply(--layout-fit);
-        background-color: var(--primary-background-color);
+        background-color: var(--dark-background-color);
         overflow: hidden;
         font-family: 'Roboto', 'Noto', sans-serif;
         -webkit-font-smoothing: antialiased;
@@ -19,39 +19,10 @@ Copyright (c) 2015 Peter Svedberg.
         font-weight: 400;
         line-height: 24px;
         color: var(--primary-text-color);
-
-        --paper-card-header-color: var(--secondary-text-color);
-        --paper-card-content: {
-          padding: 0 16px 24px 16px;
-        }
-        --paper-card-actions: {
-          color: var(--secondary-text-color);
-        }
       }
   
-      #createActionableEditor {
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.3s ease-out 0.02s;        
-        position: absolute;
-        left: 32px;
-        top: 24px;
-        width: 280px;
-        background-color: var(--primary-background-color);       
-      }
-      
-      #createActionableEditor.show {
-        z-index: 6;
-        opacity: 1;
-      }
-      
-     .topEdge {
-        height: 1px;
-        background-color: var(--light-primary-color);
-      }
-      
       .view {
-        background-color: var(--primary-background-color);       
+        background-color: var(--dark-background-color);       
         @apply(--layout-vertical);
         height: 100%;
         opacity: 1;
@@ -60,7 +31,6 @@ Copyright (c) 2015 Peter Svedberg.
 
       #main {
         @apply(--layout-flex);
-        background-color: var(--primary-background-color);       
         @apply(--layout-horizontal);
         width: 100%;
         overflow: hidden;
@@ -69,7 +39,6 @@ Copyright (c) 2015 Peter Svedberg.
       .footer {
         height: 32px;
         background-color: var(--dark-background-color);
-        border-top: 1px solid var(--divider-color);
       }
       
       .action-panel {
@@ -78,22 +47,22 @@ Copyright (c) 2015 Peter Svedberg.
       }
 
       .app-name {
-        @apply(--paper-font-title);
         @apply(--layout-flex);
-        color: var(--default-primary-color);
+        color: var(--dark-primary-color);
         line-height: 28px !important;
-        margin: 0 16px 0 16px;
+        margin: 0 16px 0 32px;
+        font-size: 24px;
+        font-weight: 300;
       }
 
       .action-button {
-        margin: -20px 16px 0px 16px;
+        margin: -16px 16px 0px 16px;
         background-color: var(--dark-background-color);
-        color: var(--button-primary-color);
+        color: var(--dark-primary-color);
       }
 
       .fab {
         background-color: var(--accent-color);
-        color: var(--text-primary-color);
       }
       
       /* s */
@@ -536,17 +505,7 @@ Copyright (c) 2015 Peter Svedberg.
     <iron-media-query query="(min-width: 961px) and (max-width: 1280px) and (orientation: landscape)" query-matches="{{xlLandscape}}"></iron-media-query>
     
     <data-surface id="ds" actionables="{{actionables}}" selected-actionable="{{selectedActionable}}"></data-surface>
-    <paper-card id="createActionableEditor" elevation="2" heading="Create List">
-      <div class="card-content">
-        <paper-input id="actionableName" on-keyup="_createOnEnter" autofocus label="Name of List"></paper-input>
-      </div>
-      <div class="card-actions">
-        <paper-button on-tap="_cancel"><iron-icon icon="clear"></iron-icon></paper-button>
-        <paper-button on-tap="_create"><iron-icon icon="check"></iron-icon></paper-button>
-      </div>
-    </paper-card>
     <div class="view">
-      <div class="topEdge"></div>
       <div id="main">
         <paper-material id="navigation" elevation="1">
           <actionables-list id="actionablesList" actionables="{{actionables}}" selected-actionable="{{selectedActionable}}"></actionables-list>
@@ -581,7 +540,6 @@ Copyright (c) 2015 Peter Svedberg.
             actionables: {
               type: Array,
               notify: true,
-              observer: '_actionablesChanged'
             },
             
             selectedActionable: {
@@ -618,20 +576,18 @@ Copyright (c) 2015 Peter Svedberg.
             isTogglingNav: false,          
             isTogglingMoreActions: false,
             
+            isCreateActionableDialogImported: false,
+
             layoutHeight: 0
           };
           
-        }
-        
-        _actionablesChanged() {
-          console.log('_actionablesChanged');          
         }
         
         _selectedActionableChanged() {
           if (this.selectedActionable === null) {
             return;
           }
-          console.log('this.selectedActionable changed ' + this.selectedActionable.id);
+          //console.log('this.selectedActionable changed ' + this.selectedActionable.id);
           if (this.isOneColumn && this.navOpen) {
             this._toggleNavigation();
           }
@@ -776,30 +732,24 @@ Copyright (c) 2015 Peter Svedberg.
         }
         
         _createActionable() {
-          Polymer.Base.toggleClass('show', true, this.$.createActionableEditor);
-        }
-        
-        _cancel() {
-          this.$.actionableName.value = '';
-          Polymer.Base.toggleClass('show', false, this.$.createActionableEditor);
-        }
-        
-        _doCreate() {
-          var name = this.$.actionableName.value;
-          this.fire('createActionable', {'name': name});
-          this.$.actionableName.value = '';
-          Polymer.Base.toggleClass('show', false, this.$.createActionableEditor);
-        }
-  
-        _create() {
-          this._doCreate();
-        }
-  
-        _createOnEnter(e) {
-          if (e.keyCode === 13) {
-            this._doCreate();
+          if (this.isCreateActionableDialogImported) {
+            this._doCreateActionable();
+          } else {
+            /* jshint unused: false */
+            this.importHref('elements/create-actionable-dialog/create-actionable-dialog.html', function(e) {
+              this.isCreateActionableDialogImported = true;
+              this._doCreateActionable();             
+            }, function(e) {
+                console.log('failed to import create-actionable-dialog ' + e);
+            });
           }
         }
+        
+        _doCreateActionable() {
+          var createActionableDialog = document.createElement('create-actionable-dialog');
+          document.getElementById('main').appendChild(createActionableDialog);
+        }
+        
       }
       new Polymer(AppView);
     })();

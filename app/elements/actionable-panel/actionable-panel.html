@@ -11,9 +11,10 @@ Copyright (c) 2015 Peter Svedberg.
       :host {
         @apply(--layout-vertical);
         height: 100%;
+        background-color: var(--primary-background-color);
         
         --iron-autogrow-textarea: {
-          border-bottom: 1px solid grey;
+          border-bottom: 1px solid var(--light-divider-color);
         }
         
       }
@@ -26,6 +27,10 @@ Copyright (c) 2015 Peter Svedberg.
         @apply(--layout-flex);        
       }
       
+      paper-icon-button {
+        color: var(--button-secondary-color);
+      }
+        
       .panel {
         @apply(--layout-flex);        
         margin: 16px;
@@ -33,11 +38,14 @@ Copyright (c) 2015 Peter Svedberg.
       }
 
       .main-toolbar {
-        background-color: var(--default-primary-color);
+        background-color: var(--primary-background-color);
+        border-bottom: 1px solid var(--divider-color);
       }
       
       .actionable-title {
-        @apply(--paper-font-title);
+        color: var(--dark-primary-color);
+        font-size: 24px;
+        font-weight: 300;
       }
       
     </style>
@@ -66,13 +74,8 @@ Copyright (c) 2015 Peter Svedberg.
             actionable: {
               type: Object,
               notify: true,
-              observer: '_actionableChanged'
             }
           };
-        }
-        
-        _actionableChanged() {
-          console.log('_actionableChanged');
         }
         
       }
