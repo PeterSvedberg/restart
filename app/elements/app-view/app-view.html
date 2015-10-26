@@ -248,7 +248,7 @@ Copyright (c) 2015 Peter Svedberg.
       }
     
       /* smallPortrait */
-      @media (max-width: 360px) and (orientation: portrait) {
+      @media (min-width: 0px) and (max-width: 360px) and (orientation: portrait) {
         .action-panel {
           margin: 0 8px 0 8px;
         }
@@ -371,7 +371,7 @@ Copyright (c) 2015 Peter Svedberg.
       }
       
       /* smallLandscape */
-      @media (max-width: 480px) and (orientation: landscape) {
+      @media (min-width: 0px) and (max-width: 480px) and (orientation: landscape) {
         .action-panel {
           margin: 0 16px 0 16px;
         }
@@ -487,23 +487,6 @@ Copyright (c) 2015 Peter Svedberg.
       
     </style>
 
-    <iron-media-query query="(min-width: 0px) and (max-width: 600px)" query-matches="{{s}}"></iron-media-query>
-    <iron-media-query query="(min-width: 601px) and (max-width: 1280px)" query-matches="{{m}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1281px) and (max-width: 1440px)" query-matches="{{l}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1441px) and (max-width: 1600px)" query-matches="{{xl}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1601px) and (max-width: 1920px)" query-matches="{{xxl}}"></iron-media-query>
-    <iron-media-query query="(min-width: 1921px)" query-matches="{{xxxl}}"></iron-media-query>
-    
-    <iron-media-query query="(max-width: 360px) and (orientation: portrait)" query-matches="{{smallPortrait}}"></iron-media-query>
-    <iron-media-query query="(min-width: 361px) and (max-width: 600px) and (orientation: portrait)" query-matches="{{mediumPortrait}}"></iron-media-query>
-    <iron-media-query query="(min-width: 601px) and (max-width: 840px) and (orientation: portrait)" query-matches="{{largePortrait}}"></iron-media-query>
-    <iron-media-query query="(min-width: 841px) and (max-width: 1280px) and (orientation: portrait)" query-matches="{{xlPortrait}}"></iron-media-query>
-    
-    <iron-media-query query="(max-width: 480px) and (orientation: landscape)" query-matches="{{smallLandscape}}"></iron-media-query>
-    <iron-media-query query="(min-width: 481px) and (max-width: 600px) and (orientation: landscape)" query-matches="{{mediumLandscape}}"></iron-media-query>
-    <iron-media-query query="(min-width: 601px) and (max-width: 960px) and (orientation: landscape)" query-matches="{{largeLandscape}}"></iron-media-query>
-    <iron-media-query query="(min-width: 961px) and (max-width: 1280px) and (orientation: landscape)" query-matches="{{xlLandscape}}"></iron-media-query>
-    
     <data-surface id="ds" actionables="{{actionables}}" selected-actionable="{{selectedActionable}}"></data-surface>
     <div class="view">
       <div id="main">
@@ -548,26 +531,9 @@ Copyright (c) 2015 Peter Svedberg.
               observer: '_selectedActionableChanged'
             },
             
-            isOneColumn: false,
-            isTwoColumn: false,
-            isThreeColumn: false,
-  
-            s: false,
-            m: false,
-            l: false,
-            xl: false,
-            xxl: false,
-            xxxl: false,
-            
-            smallPortrait: false,
-            mediumPortrait: false,
-            largePortrait: false,
-            xlPortrait: false,
-              
-            smallLandscape: false,
-            mediumLandscape: false,
-            largeLandscape: false,
-            xlLandscape: false,
+            layout: {
+              type: Object
+            },
             
             navOpen: false,          
             moreActionsOpen: false,
@@ -588,51 +554,20 @@ Copyright (c) 2015 Peter Svedberg.
             return;
           }
           //console.log('this.selectedActionable changed ' + this.selectedActionable.id);
-          if (this.isOneColumn && this.navOpen) {
+          if (this.layout.isOneColumn && this.navOpen) {
             this._toggleNavigation();
           }
         }
         
         attached() {
           addEventListener('resize', () => {
-            this._calcDimensions();
+            this._setHeight();
           });
-          this._calcDimensions();
-          this.navOpen = !this.isOneColumn;
-          this.moreActionsOpen = this.isThreeColumn;
-          this._logMedia();
-        }
-        
-        _calcDimensions() {
-          this.isOneColumn = this.s || this.smallPortrait || this.mediumPortrait || this.smallLandscape || this.mediumLandscape;
-          this.isTwoColumn = this.m || this.l || this.largePortrait || this.xlPortrait || this.largeLandscape || this.xlLandscape;
-          this.isThreeColumn = this.xl || this.xxl || this.xxxl;
           this._setHeight();
+          this.navOpen = !this.layout.isOneColumn;
+          this.moreActionsOpen = this.layout.isThreeColumn;
         }
         
-        _logMedia() {
-          console.log('isOneColumn:' + this.isOneColumn); 
-          console.log('isTwoColumn:' + this.isTwoColumn); 
-          console.log('isThreeColumn:' + this.isThreeColumn); 
-          
-          console.log('s:' + this.s); 
-          console.log('m:' + this.m); 
-          console.log('l:' + this.l); 
-          console.log('xl:' + this.xl);
-          console.log('xxl:' + this.xxl);
-          console.log('xxxl:' + this.xxxl);
-          
-          console.log('smallPortrait:' + this.smallPortrait);
-          console.log('mediumPortrait:' + this.mediumPortrait);
-          console.log('largePortrait:' + this.largePortrait);
-          console.log('xlPortrait:' + this.xlPortrait);
-          
-          console.log('smallLandscape:' + this.smallLandscape);
-          console.log('mediumLandscape:' + this.mediumLandscape);
-          console.log('largeLandscape:' + this.largeLandscape);
-          console.log('xlLandscape:' + this.xlLandscape);
-        }
-            
         _setHeight() {
           if (!this.$.main) {
             return;
@@ -648,15 +583,15 @@ Copyright (c) 2015 Peter Svedberg.
         
         _computeHeight() {
           var h = this.layoutHeight;
-          if (this.isOneColumn) {
+          if (this.layout.isOneColumn) {
             return h -= 0; 
-          } else if (this.isTwoColumn) {
-            if (this.m || this.xlPortrait || this.mediumLandscape || this.largeLandscape || this.xlLandscape) {
+          } else if (this.layout.isTwoColumn) {
+            if (this.m || this.layout.xlPortrait || this.layout.mediumLandscape || this.layout.largeLandscape || this.layout.xlLandscape) {
               return h -= 16;
             } else {
               return h -= 24;
             }
-          } else if (this.isThreeColumn) {
+          } else if (this.layout.isThreeColumn) {
             return h -= 32;
           }
         }
@@ -664,7 +599,7 @@ Copyright (c) 2015 Peter Svedberg.
         _removeToggleNavigationClass() {
           // navigation is initially closed in one column layout (add class to open)
           // otherwise open (add class to close)
-          var remove = this.isOneColumn ? !this.navOpen : this.navOpen;
+          var remove = this.layout.isOneColumn ? !this.navOpen : this.navOpen;
           return remove;
         }
         
@@ -683,13 +618,13 @@ Copyright (c) 2015 Peter Svedberg.
             // not more than once
             return false;
           }
-          if (this.isThreeColumn) {
+          if (this.layout.isThreeColumn) {
             return false;
           }
-          if (this.isOneColumn) {
+          if (this.layout.isOneColumn) {
             return this.moreActionsOpen;
           }
-          if (this.isTwoColumn && (this.moreActionsOpen || this.wasMoreActionsOpen)) {
+          if (this.layout.isTwoColumn && (this.moreActionsOpen || this.wasMoreActionsOpen)) {
             this.wasMoreActionsOpen = this.moreActionsOpen ? true : false;
             return true;
           }
@@ -699,7 +634,7 @@ Copyright (c) 2015 Peter Svedberg.
         _removeToggleMoreActionsClass() {
           // more actions is initially open in three column layout (add class to close)
           // otherwise closed (add class to open)
-          var remove = this.isThreeColumn ? this.moreActionsOpen : !this.moreActionsOpen;
+          var remove = this.layout.isThreeColumn ? this.moreActionsOpen : !this.moreActionsOpen;
           return remove;
         }
         
@@ -718,13 +653,13 @@ Copyright (c) 2015 Peter Svedberg.
             // not more than once
             return false;
           }
-          if (this.isThreeColumn) {
+          if (this.layout.isThreeColumn) {
             return false;
           }
-          if (this.isOneColumn) {
+          if (this.layout.isOneColumn) {
             return this.navOpen;
           }
-          if (this.isTwoColumn && (this.navOpen || this.wasNavOpen)) {
+          if (this.layout.isTwoColumn && (this.navOpen || this.wasNavOpen)) {
             this.wasNavOpen = this.navOpen ? true : false;
             return true;
           }
@@ -751,7 +686,9 @@ Copyright (c) 2015 Peter Svedberg.
         }
         
       }
+      
       new Polymer(AppView);
+      
     })();
   </script>
 
