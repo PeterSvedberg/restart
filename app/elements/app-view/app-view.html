@@ -532,7 +532,7 @@ Copyright (c) 2015 Peter Svedberg.
               observer: '_selectedActionableChanged'
             },
                         
-            isCreateActionableDialogImported: false
+            isCreateDialogImported: false
 
           };
           
@@ -571,22 +571,28 @@ Copyright (c) 2015 Peter Svedberg.
         }
         
         _createActionable() {
-          if (this.isCreateActionableDialogImported) {
+          if (this.isCreateDialogImported) {
             this._doCreateActionable();
           } else {
-            /* jshint unused: false */
-            this.importHref('elements/create-actionable-dialog/create-actionable-dialog.html', function(e) {
-              this.isCreateActionableDialogImported = true;
-              this._doCreateActionable();             
-            }, function(e) {
-                console.log('failed to import create-actionable-dialog ' + e);
-            });
+            this._importCreateDialogAndContinue(this._doCreateActionable);
           }
         }
         
         _doCreateActionable() {
-          var createActionableDialog = document.createElement('create-actionable-dialog');
-          document.getElementById('main').appendChild(createActionableDialog);
+          var createDialog = document.createElement('create-dialog');
+          createDialog.setHeading('New List');
+          createDialog.setEvent('createActionable');
+          document.getElementById('main').appendChild(createDialog);
+        }
+        
+        _importCreateDialogAndContinue(callback) {
+            /* jshint unused: false */
+            this.importHref('elements/create-dialog/create-dialog.html', function(e) {
+              this.isCreateDialogImported = true;
+              callback();             
+            }, function(e) {
+              console.log('failed to import create-dialog ' + e);
+            });
         }
         
       }

@@ -5,15 +5,18 @@ Copyright (c) 2015 Peter Svedberg.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="create-actionable-dialog">
+<dom-module id="create-dialog">
   <template>
     <style>
       :host {
         display: block;
         --paper-card-header-color: var(--inverse-text-color);
         --paper-card-header: {
-          background-color: var(--dark-primary-color);       
+          background-color: var(--primary-color);       
         }
+        --paper-input-container-input-color: var(--primary-text-color);
+        --paper-input-container-focus-color: var(--primary-color);
+        --paper-input-container-invalid-color: var(--accent-color);
         --paper-card-header-text: {
           font-size: 24px;
           font-weight: 300;
@@ -26,7 +29,7 @@ Copyright (c) 2015 Peter Svedberg.
         }
       }
       
-      #createActionableDialog {
+      #createDialog {
         z-index: 6;
         opacity: 1;
         transition: opacity 0.3s ease-in-out 0.02s;        
@@ -37,19 +40,19 @@ Copyright (c) 2015 Peter Svedberg.
         background-color: var(--primary-background-color);       
       }
       
-      #createActionableDialog.hide {
+      #createDialog.hide {
         opacity: 0;
       }
       
-      #actionableName {
+      #name {
         color: var(--inverse-text-color);
       }
 
     </style>
     
-    <paper-card id="createActionableDialog" class="hide" elevation="2" heading="Create List">
+    <paper-card id="createDialog" class="hide" elevation="2" heading="Create">
       <div class="card-content">
-        <paper-input id="actionableName" on-keyup="_createOnEnter" autofocus="true" label="Name of List" required error-message="A name is required"></paper-input>
+        <paper-input id="name" on-keyup="_createOnEnter" autofocus="true" label="Name" required error-message="A name is required"></paper-input>
       </div>
       <div class="card-actions">
         <paper-button on-tap="_cancel"><iron-icon icon="clear"></iron-icon></paper-button>
@@ -62,25 +65,40 @@ Copyright (c) 2015 Peter Svedberg.
     'use strict';
     
     (function() {
-      class CreateActionableDialog {
+      class CreateDialog {
         beforeRegister() {
-          this.is = 'create-actionable-dialog'; 
+          this.is = 'create-dialog';
+          
+          this.properties = {
+            event: {
+              type: String,
+              value: 'create'
+            }
+          };
         }
         
         attached() {
-          Polymer.Base.toggleClass('hide', false, this.$.createActionableDialog);
+          Polymer.Base.toggleClass('hide', false, this.$.createDialog);
+        }
+        
+        setHeading(heading) {
+          this.$.createDialog.heading = heading;
+        }
+        
+        setEvent(event) {
+          this.event = event;
         }
         
         _cancel() {
-          Polymer.Base.toggleClass('hide', true, this.$.createActionableDialog);
+          Polymer.Base.toggleClass('hide', true, this.$.createDialog);
           this.addEventListener('transitionend', this.remove);
         }
         
         _doCreate() {
-          if (this.$.actionableName.validate()) {
-            var name = this.$.actionableName.value;
-            this.fire('createActionable', {'name': name});
-            Polymer.Base.toggleClass('hide', true, this.$.createActionableDialog);
+          if (this.$.name.validate()) {
+            var value = this.$.name.value;
+            this.fire(this.event, {'value': value});
+            Polymer.Base.toggleClass('hide', true, this.$.createDialog);
             this.addEventListener('transitionend', this.remove); 
           }          
         }
@@ -96,7 +114,7 @@ Copyright (c) 2015 Peter Svedberg.
         }
       }
       
-      new Polymer(CreateActionableDialog);
+      new Polymer(CreateDialog);
         
     })();
 
