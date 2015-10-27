@@ -18,7 +18,7 @@ Copyright (c) 2015 Peter Svedberg.
           ds.loadActionable();
         });
         window.addEventListener('createActionable', function(e) {
-          ds.createActionable(e.detail.name);
+          ds.createActionable(e.detail.value);
         });
         window.addEventListener('deleteActionable', function(e) {
           ds.deleteActionable(e.detail.id);
