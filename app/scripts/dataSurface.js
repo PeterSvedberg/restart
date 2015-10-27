@@ -25,7 +25,7 @@ Copyright (c) 2015 Peter Svedberg.
         });
         // This listener is just here for testing
         window.addEventListener('createdActionable', (e) => {
-          console.log('createdActionable ' + e.detail.actionable);
+          console.log('createdActionable ' + e.detail.actionable.id);
         });
         // This listener is just here for testing
         window.addEventListener('deletedActionable', (e) => {

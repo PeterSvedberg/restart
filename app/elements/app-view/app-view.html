@@ -534,8 +534,7 @@ Copyright (c) 2015 Peter Svedberg.
                         
             isCreateDialogImported: false
 
-          };
-          
+          };         
         }
         
         attached() {
@@ -581,6 +580,7 @@ Copyright (c) 2015 Peter Svedberg.
         _doCreateActionable() {
           var createDialog = document.createElement('create-dialog');
           createDialog.setHeading('New List');
+          createDialog.setPlaceholder('Name of list (required)');
           createDialog.setEvent('createActionable');
           document.getElementById('main').appendChild(createDialog);
         }
