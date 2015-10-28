@@ -524,12 +524,13 @@ Copyright (c) 2015 Peter Svedberg.
             actionables: {
               type: Array,
               notify: true,
+              value: function() { return [];}
             },
             
             selectedActionable: {
               type: Object,
               notify: true,
-              value: {},
+              value: function() { return {}; },
               observer: '_selectedActionableChanged'
             },
                         
@@ -555,9 +556,6 @@ Copyright (c) 2015 Peter Svedberg.
         }
         
         _selectedActionableChanged() {
-          if (this.selectedActionable === null) {
-            return;
-          }
           //console.log('this.selectedActionable changed ' + this.selectedActionable.id);
           this.$.ls.toggleNavigation(this.$.navigation, this.$.moreActions, true);
         }

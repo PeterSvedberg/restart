@@ -48,7 +48,7 @@ Copyright (c) 2015 Peter Svedberg.
         outline: 0;
       }
 
-      .item.selected {
+      .item.active {
       }
 
       .actionable-name {
@@ -58,7 +58,7 @@ Copyright (c) 2015 Peter Svedberg.
         text-decoration: none;
       }
       
-      .item.selected .actionable-name {
+      .item.active .actionable-name {
         color: var(--dark-primary-color);
         font-weight: normal;
       }
@@ -69,11 +69,11 @@ Copyright (c) 2015 Peter Svedberg.
         display: none;
       }
       
-      .item.selected .delete {
+      .item.active .delete {
         display: inline;
       }
 
-      .item.selected .delete:hover {
+      .item.active .delete:hover {
         color: var(--accent-color);
       }
       
@@ -109,13 +109,14 @@ Copyright (c) 2015 Peter Svedberg.
           this.properties = {
             actionables: {
               type: Array,
-              notify: true,
+              value: function() { return [];},
+              notify: true
             },
     
             selectedActionable: {
               type: Object,
+              value: function() { return {}; },
               notify: true,
-              value: {},
               observer: '_selectedActionableChanged'
             },
             
@@ -130,7 +131,7 @@ Copyright (c) 2015 Peter Svedberg.
         _computeClass(id) {
           var classes = 'item';
           if (this.selectedActionable && this.selectedActionable.id === id) {
-            classes += ' selected';
+            classes += ' active';
           }
           return classes;
         }
@@ -144,19 +145,19 @@ Copyright (c) 2015 Peter Svedberg.
           if (this.lastId !== '') {
             var item = document.getElementById(this.lastId);
             if (item) {
-              Polymer.Base.toggleClass('selected', isAdd, item);
+              Polymer.Base.toggleClass('active', isAdd, item);
             }
           }
         }
 
         _selectedActionableChanged() {
-          if (!this.actionables || !this.selectedActionable) {
+          if (this.actionables.length === 0 || !this.selectedActionable || !this.selectedActionable.id) {
             return;
           }
-          // remove selected class from previous
+          // remove active class from previous
           this._toggleSelected(false);
           this.lastId = this.selectedActionable.id;
-          // add selected class to new
+          // add active class to new
           this._toggleSelected(true);
           window.location.hash = `!${this.selectedActionable.id}`;
         }
