@@ -12,11 +12,20 @@ Copyright (c) 2015 Peter Svedberg.
         @apply(--layout-vertical);
         height: 100%;
         background-color: var(--primary-background-color);
-        
+        --paper-input-container-color: var(--primary-background-color);
+        --paper-input-container-focus-color: var(--primary-color);
+        --paper-input-container-invalid-color: var(--accent-color);
+        --paper-input-container-input-color: var(--dark-primary-color);
+        --paper-input-container: {
+          padding-bottom: 28px;
+        }
+        --paper-input-container-input: {
+          font-size: 24px;
+          font-weight: 300;
+        }
         --iron-autogrow-textarea: {
           border-bottom: 1px solid var(--light-divider-color);
-        }
-        
+        }       
       }
       
       iron-autogrow-textarea {
@@ -42,17 +51,11 @@ Copyright (c) 2015 Peter Svedberg.
         border-bottom: 1px solid var(--divider-color);
       }
       
-      .actionable-title {
-        color: var(--dark-primary-color);
-        font-size: 24px;
-        font-weight: 300;
-      }
-      
     </style>
     
     <paper-scroll-header-panel scrollAwayTopbar condenses>
       <paper-toolbar class="main-toolbar">
-        <div class="actionable-title">{{actionable.title}}</div>
+        <paper-input id="name" value="{{actionable.title}}" on-blur="_editName" required error-message="A name is required"></paper-input>
         <span class="flex"></span>
         <paper-icon-button icon="add"></paper-icon-button>
       </paper-toolbar>  
@@ -73,11 +76,18 @@ Copyright (c) 2015 Peter Svedberg.
           this.properties = {
             actionable: {
               type: Object,
-              notify: true,
+              value: {},
+              notify: true
             }
           };
         }
         
+        _editName() {
+          if (this.$.name.validate()) {
+            this.set('actionable.title', this.$.name.value);
+            this.fire('actionableNameChangeAction', {'actionable': this.actionable});
+          }          
+        }
       }
       
       new Polymer(ActionablePanel);

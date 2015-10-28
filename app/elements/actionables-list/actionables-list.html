@@ -85,11 +85,11 @@ Copyright (c) 2015 Peter Svedberg.
         <span class="flex"></span>
         <paper-icon-button icon="search"></paper-icon-button>
       </paper-toolbar>
-      <iron-list id="actionablesList" items="{{actionables}}" as="actionable" selection-enabled selected-item="{{selectedActionable}}">
+      <iron-list id="ironList" items="{{actionables}}" selection-enabled selected-item="{{selectedActionable}}">
         <template>
           <div>
-            <div id$="[[actionable.id]]" tabindex="0" class$="[[_computeClass(actionable.id)]]">
-              <span class="actionable-name">[[actionable.title]]</span>
+            <div id$="[[item.id]]" class$="[[_computeClass(item.id)]]">
+              <span class="actionable-name">{{item.title}}</span>
               <iron-icon icon="remove" class="delete" on-tap="onDelete"></iron-icon>
             </div>
           </div>
@@ -115,6 +115,7 @@ Copyright (c) 2015 Peter Svedberg.
             selectedActionable: {
               type: Object,
               notify: true,
+              value: {},
               observer: '_selectedActionableChanged'
             },
             
@@ -123,6 +124,7 @@ Copyright (c) 2015 Peter Svedberg.
               value: ''
             }       
           };
+          
         }
         
         _computeClass(id) {
@@ -151,7 +153,6 @@ Copyright (c) 2015 Peter Svedberg.
           if (!this.actionables || !this.selectedActionable) {
             return;
           }
-          //console.log('_selectedActionableChanged ' + this.selectedActionable.id);
           // remove selected class from previous
           this._toggleSelected(false);
           this.lastId = this.selectedActionable.id;
@@ -160,7 +161,9 @@ Copyright (c) 2015 Peter Svedberg.
           window.location.hash = `!${this.selectedActionable.id}`;
         }
       }
+      
       new Polymer(ActionablesList);
+      
     })();
   </script>
 </dom-module>

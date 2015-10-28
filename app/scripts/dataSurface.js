@@ -14,11 +14,15 @@ Copyright (c) 2015 Peter Svedberg.
       ready = ds !== null && ds !== undefined;
       if (ready) {
         window.addEventListener('hashchange', function() {
-          ds.setHashValue();
-          ds.loadActionable();
+          if (ds.setHashValue()) {
+            ds.loadActionable();
+          }
         });
         window.addEventListener('createActionable', function(e) {
           ds.createActionable(e.detail.value);
+        });
+        window.addEventListener('actionableNameChangeAction', function(e) {
+          ds.changeActionableName(e.detail.actionable);
         });
         window.addEventListener('deleteActionable', function(e) {
           ds.deleteActionable(e.detail.id);
@@ -26,6 +30,10 @@ Copyright (c) 2015 Peter Svedberg.
         // This listener is just here for testing
         window.addEventListener('createdActionable', (e) => {
           console.log('createdActionable ' + e.detail.actionable.id);
+        });
+        // This listener is just here for testing
+        window.addEventListener('changedActionableName', (e) => {
+          console.log('changedActionableName ' + e.detail.actionable.title);
         });
         // This listener is just here for testing
         window.addEventListener('deletedActionable', (e) => {

@@ -32,22 +32,19 @@ Copyright (c) 2015 Peter Svedberg.
           
           selectedActionable: {
             type: Object,
-            notify: true
+            notify: true,
+            value: {}
           },
           
           hashValue: {
             type: String
           }
         };
-      }
-      
-      setHashValue() {
-        var hash = window.location.hash;
-        if (hash.length < 3) {
-          return false;
-        }
-        this.hashValue = hash.substring(2, hash.length);
-        return true;
+        
+        this.observers = [
+          '_selectedActionableTitleChanged(selectedActionable.title)'
+        ];
+
       }
       
       attached() {
@@ -59,12 +56,29 @@ Copyright (c) 2015 Peter Svedberg.
         }
       }
       
+      setHashValue() {
+        var hash = window.location.hash;
+        if (hash.length < 3) {
+          return false;
+        }
+        this.hashValue = hash.substring(2, hash.length);
+        return true;
+      }
+      
       loadActionable() {
         for (let a of this.actionables) {
           if (a.id === this.hashValue) {
             this.selectedActionable = a;
             break;
           }
+        }
+      }
+      
+      _selectedActionableTitleChanged(title) {
+        if (this.selectedActionable) {
+          // This is here for testing. For a name change action we
+          // listen for an event in dataSurface.js.
+          console.log('selectedActionableTitleChanged ' + title);
         }
       }
       
@@ -93,9 +107,15 @@ Copyright (c) 2015 Peter Svedberg.
         let a = new Actionable(this._getId(), name);
         this.unshift('actionables', a);
         this.set('selectedActionable', a);
-        window.location.hash = `!${a.id}`;
-        // Hook for backend
+       // window.location.hash = `!${a.id}`;
+        // Hook for backend?
         this.fire('createdActionable', {actionable: a, bubbles: false});
+      }
+        
+      changeActionableName(actionable) {
+        // Do persistence...
+        // Hook for backend?
+        this.fire('changedActionableName', {actionable: actionable, bubbles: false});
       }
         
       deleteActionable(id) {
@@ -103,14 +123,16 @@ Copyright (c) 2015 Peter Svedberg.
           this.arrayDelete('actionables', this.selectedActionable);
           this.set('selectedActionable', null);
           window.history.back();
-          // Hook for backend
+          // Hook for backend?
           this.fire('deletedActionable', {id: id, bubbles: false});
         } else {
           console.log('deleteActionable, id mismatch! id:' + id + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
         }
       }
     }
+    
     new Polymer(DataSurface);
+    
   })();
 </script>
 
