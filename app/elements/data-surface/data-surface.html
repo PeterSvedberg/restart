@@ -39,12 +39,7 @@ Copyright (c) 2015 Peter Svedberg.
           hashValue: {
             type: String
           }
-        };
-        
-        this.observers = [
-          '_selectedActionableTitleChanged(selectedActionable.title)'
-        ];
-
+        };       
       }
       
       attached() {
@@ -74,14 +69,6 @@ Copyright (c) 2015 Peter Svedberg.
         }
       }
       
-      _selectedActionableTitleChanged(title) {
-        if (this.selectedActionable) {
-          // This is here for testing. For a name change action we
-          // listen for an event in dataSurface.js.
-          console.log('selectedActionableTitleChanged ' + title);
-        }
-      }
-      
       _getId() {
         let id;
         if (window.crypto === undefined) {
@@ -107,7 +94,6 @@ Copyright (c) 2015 Peter Svedberg.
         let a = new Actionable(this._getId(), name);
         this.unshift('actionables', a);
         this.set('selectedActionable', a);
-       // window.location.hash = `!${a.id}`;
         // Hook for backend?
         this.fire('createdActionable', {actionable: a, bubbles: false});
       }
@@ -122,6 +108,7 @@ Copyright (c) 2015 Peter Svedberg.
         if (id === this.selectedActionable.id) {
           this.arrayDelete('actionables', this.selectedActionable);
           this.set('selectedActionable', null);
+          // TODO remove item from history
           window.history.back();
           // Hook for backend?
           this.fire('deletedActionable', {id: id, bubbles: false});

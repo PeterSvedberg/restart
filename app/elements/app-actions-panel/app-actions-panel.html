@@ -9,13 +9,55 @@ Copyright (c) 2015 Peter Svedberg.
   <template>
     <style>
       :host {
-        background-color: var(--paper-grey-50);
+        @apply(--layout-vertical);
+        height: 100%;
+        background-color: var(--primary-background-color);
       }
       
+      paper-scroll-header-panel {
+        @apply(--layout-flex);        
+      }
+      
+      paper-icon-button {
+        color: var(--button-secondary-color);
+      }
+        
+      .toolbar {
+        background-color: var(--primary-background-color);
+        border-bottom: 1px solid var(--divider-color);
+      }
+      
+      .more-title {
+        color: var(--dark-primary-color);
+        font-size: 24px;
+        font-weight: 300;
+      }
+
+      .panel {
+        @apply(--layout-flex);        
+        margin: 16px;
+        color: var(--primary-text-color);
+      }
+
     </style>
     
-    <div id="cards">
-    </div>
+    <paper-scroll-header-panel scrollAwayTopbar condenses>
+      <paper-toolbar class="toolbar">
+        <div class="more-title">App</div>
+        <span class="flex"></span>
+        <paper-icon-button icon="face"></paper-icon-button>
+        <paper-icon-button icon="settings"></paper-icon-button>
+      </paper-toolbar>  
+      <div class="panel">
+        <h3>This panel is superfluous</h3>
+        <p>So, let's use it to explain this little project. It started as an exploratory
+          foray into Polymer and Web Component land. I have another project which is looking
+          for a new frontend implementation language, hence this projects name on github:
+          <a href="https://github.com/PeterSvedberg/restart">restart</a>.
+          The code is free to use.
+        </p>
+      </div>
+    </paper-scroll-header-panel>
 
   </template>
   
@@ -36,7 +78,9 @@ Copyright (c) 2015 Peter Svedberg.
           };
         }        
       }
+      
       new Polymer(AppActionsPanel);
+      
     })();
   </script>
 </dom-module>
