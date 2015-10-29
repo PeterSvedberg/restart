@@ -109,13 +109,13 @@ Copyright (c) 2015 Peter Svedberg.
           this.properties = {
             actionables: {
               type: Array,
-              value: function() { return [];},
+              value: () => [],
               notify: true
             },
     
             selectedActionable: {
               type: Object,
-              value: function() { return {}; },
+              value: () => {},
               notify: true,
               observer: '_selectedActionableChanged'
             },
@@ -159,6 +159,7 @@ Copyright (c) 2015 Peter Svedberg.
           this.lastId = this.selectedActionable.id;
           // add active class to new
           this._toggleSelected(true);
+          this.distributeContent();
           window.location.hash = `!${this.selectedActionable.id}`;
         }
       }

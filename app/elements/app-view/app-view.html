@@ -524,13 +524,13 @@ Copyright (c) 2015 Peter Svedberg.
             actionables: {
               type: Array,
               notify: true,
-              value: function() { return [];}
+              value: () => []
             },
             
             selectedActionable: {
               type: Object,
               notify: true,
-              value: function() { return {}; },
+              value: () => {},
               observer: '_selectedActionableChanged'
             },
                         
@@ -549,14 +549,13 @@ Copyright (c) 2015 Peter Svedberg.
         _setHeight() {
           if (this.$.main) {
             var height = this.$.ls.setHeight(this.$.main.offsetHeight);
-            this.$.navigation.setAttribute('style', height);
-            this.$.actionable.setAttribute('style', height);
-            this.$.moreActions.setAttribute('style', height);
+            Polymer.dom(this.$.navigation).setAttribute('style', height);
+            Polymer.dom(this.$.actionable).setAttribute('style', height);
+            Polymer.dom(this.$.moreActions).setAttribute('style', height);
           } 
         }
         
         _selectedActionableChanged() {
-          //console.log('this.selectedActionable changed ' + this.selectedActionable.id);
           this.$.ls.toggleNavigation(this.$.navigation, this.$.moreActions, true);
         }
         
@@ -572,7 +571,7 @@ Copyright (c) 2015 Peter Svedberg.
           if (this.isCreateDialogImported) {
             this._doCreateActionable();
           } else {
-            this._importCreateDialogAndContinue(this._doCreateActionable);
+            this._importCreateDialogAndContinue();
           }
         }
         
@@ -581,19 +580,18 @@ Copyright (c) 2015 Peter Svedberg.
           createDialog.setHeading('New List');
           createDialog.setPlaceholder('Name of list (required)');
           createDialog.setEvent('createActionable');
-          document.getElementById('main').appendChild(createDialog);
+          Polymer.dom(this.$.main).appendChild(createDialog);
         }
         
-        _importCreateDialogAndContinue(callback) {
+        _importCreateDialogAndContinue() {
             /* jshint unused: false */
-            this.importHref('elements/create-dialog/create-dialog.html', function(e) {
+            this.importHref('elements/create-dialog/create-dialog.html', e => {
               this.isCreateDialogImported = true;
-              callback();             
-            }, function(e) {
+              this._doCreateActionable();             
+            }, e => {
               console.log('failed to import create-dialog ' + e);
             });
-        }
-        
+        }        
       }
       
       new Polymer(AppView);

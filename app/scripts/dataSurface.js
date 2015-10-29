@@ -13,30 +13,30 @@ Copyright (c) 2015 Peter Svedberg.
       ds = document.querySelector('#ds');
       ready = ds !== null && ds !== undefined;
       if (ready) {
-        window.addEventListener('hashchange', function() {
+        window.addEventListener('hashchange', () => {
           if (ds.setHashValue()) {
             ds.loadActionable();
           }
         });
-        window.addEventListener('createActionable', function(e) {
+        window.addEventListener('createActionable', e => {
           ds.createActionable(e.detail.value);
         });
-        window.addEventListener('actionableNameChangeAction', function(e) {
+        window.addEventListener('actionableNameChangeAction', e => {
           ds.changeActionableName(e.detail.actionable);
         });
-        window.addEventListener('deleteActionable', function(e) {
+        window.addEventListener('deleteActionable', e => {
           ds.deleteActionable(e.detail.id);
         });
         // This listener is just here for testing
-        window.addEventListener('createdActionable', (e) => {
+        window.addEventListener('createdActionable', e => {
           console.log('createdActionable ' + e.detail.actionable.id);
         });
         // This listener is just here for testing
-        window.addEventListener('changedActionableName', (e) => {
+        window.addEventListener('changedActionableName', e => {
           console.log('changedActionableName ' + e.detail.actionable.title);
         });
         // This listener is just here for testing
-        window.addEventListener('deletedActionable', (e) => {
+        window.addEventListener('deletedActionable', e => {
           console.log('deletedActionable ' + e.detail.id);
         });
       }

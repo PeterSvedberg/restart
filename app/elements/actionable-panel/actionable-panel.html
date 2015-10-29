@@ -61,6 +61,12 @@ Copyright (c) 2015 Peter Svedberg.
       </paper-toolbar>  
       <div class="panel">
         <iron-autogrow-textarea bind-value="{{actionable.text}}"></iron-autogrow-textarea>
+        <template is="dom-repeat" id="containerList" items="{{actionable.containers}}"
+                  as="container">
+          <span>{{container.name}}</span>
+        </template>
+        <array-selector id="selector" items="{{actionable.containers}}"
+                        selected="{{selectedContainer}}" toggle></array-selector>
       </div>
     </paper-scroll-header-panel>
     
@@ -76,7 +82,13 @@ Copyright (c) 2015 Peter Svedberg.
           this.properties = {
             actionable: {
               type: Object,
-              value: function() { return {}; },
+              value: () => {},
+              notify: true
+            },
+            
+            selectedContainer: {
+              type: Object,
+              value: () => {},
               notify: true
             }
           };

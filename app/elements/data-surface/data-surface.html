@@ -16,6 +16,7 @@ Copyright (c) 2015 Peter Svedberg.
       this.id = id;
       this.title = title;
       this.text = '';
+      this.containers = () => [];
     }
   }
   
@@ -28,13 +29,13 @@ Copyright (c) 2015 Peter Svedberg.
           actionables: {
             type: Array,
             notify: true,
-            value: function() { return [];}
+            value: () => []
           },
           
           selectedActionable: {
             type: Object,
             notify: true,
-            value: function() { return {}; }
+            value: () => {}
           },
           
           hashValue: {
