@@ -14,12 +14,23 @@ Copyright (c) 2015 Peter Svedberg.
   class Actionable {
     constructor(id, title) {
       this.id = id;
+      this.timestamp = Date.now();
       this.title = title;
       this.text = '';
       this.containers = () => [];
+      this.lastContainer = () => {};
     }
   }
-  
+    
+  class Container {
+    constructor(id, title) {
+      this.id = id;
+      this.title = title;
+      this.text = '';
+      this.link = '';
+    }
+  }
+    
   (function() {
     class DataSurface {
       beforeRegister() {
@@ -97,13 +108,26 @@ Copyright (c) 2015 Peter Svedberg.
         this.unshift('actionables', a);
         this.set('selectedActionable', a);
         // Hook for backend?
-        this.fire('createdActionable', {actionable: a, bubbles: false});
+        this.fire('createdActionable', {'actionable': a, 'bubbles': false});
+      }
+        
+      createContainer(actionableId, name) {
+        if (this.selectedActionable.id !== actionableId) {
+          console.log('Actionable id mismatch on add container action');
+          return;
+        }
+        let c = new Container(this._getId(), name);
+        this.unshift('selectedActionable.containers', c);
+        this.set('selectedActionable.lastContainer', c);
+        // Hook for backend?
+        this.fire('addedContainer', {'container': c, 'bubbles': false});
       }
         
       changeActionableName(actionable) {
+        actionable.timestamp = Date.now();
         // Do persistence...
         // Hook for backend?
-        this.fire('changedActionableName', {actionable: actionable, bubbles: false});
+        this.fire('changedActionableName', {'actionable': actionable, 'bubbles': false});
       }
         
       deleteActionable(id) {
@@ -113,7 +137,7 @@ Copyright (c) 2015 Peter Svedberg.
           // TODO remove item from history
           window.history.back();
           // Hook for backend?
-          this.fire('deletedActionable', {id: id, bubbles: false});
+          this.fire('deletedActionable', {'id': id, 'bubbles': false});
         } else {
           console.log('deleteActionable, id mismatch! id:' + id + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
         }

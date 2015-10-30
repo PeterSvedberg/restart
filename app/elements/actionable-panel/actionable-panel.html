@@ -25,85 +25,145 @@ Copyright (c) 2015 Peter Svedberg.
         }
         --iron-autogrow-textarea: {
           border-bottom: 1px solid var(--light-divider-color);
-        }       
+        }
       }
-      
+
       iron-autogrow-textarea {
         border: none;
       }
-      
+
       paper-scroll-header-panel {
-        @apply(--layout-flex);        
+        @apply(--layout-flex);     
       }
-      
+
       paper-icon-button {
         color: var(--button-secondary-color);
       }
-        
+
       .panel {
-        @apply(--layout-flex);        
-        margin: 16px;
+        @apply(--layout-flex);
+        margin: 16px 0;
         color: var(--primary-text-color);
       }
 
       .main-toolbar {
         background-color: var(--primary-background-color);
         border-bottom: 1px solid var(--divider-color);
+        height: 90px;
       }
-      
+
+      #addContainer {
+        --paper-input-container-color: var(--button-secondary-color);
+        --paper-input-container-underline: {
+          color: var(--light-divider-color);
+        }
+        --paper-input-container-underline-focus: {
+          color: var(--accent-color);
+          height: 1px;
+        }
+        --paper-input-container-input: {
+          font-size: 16px;
+          font-weight: 300;
+          margin-left: 16px;
+        }
+        --paper-input-container: {
+          padding: 0;
+        }
+      }
+
     </style>
-    
-    <paper-scroll-header-panel scrollAwayTopbar condenses>
+
+    <paper-scroll-header-panel id="scrollHeaderPanel" scroll-away-topbar condenses>
       <paper-toolbar class="main-toolbar">
-        <paper-input id="name" value="{{actionable.title}}" on-blur="_editName" required error-message="A name is required"></paper-input>
+        <paper-input id="name" value="{{actionable.title}}" on-blur="_editName" required
+                     error-message="A name is required"></paper-input>
         <span class="flex"></span>
         <paper-icon-button icon="add"></paper-icon-button>
-      </paper-toolbar>  
+        <paper-input id="addContainer" class="bottom fit" no-label-float
+                     label="&nbsp;&nbsp;&nbsp;&nbsp;Add new item"
+                     on-keyup="_createContainerOnEnter">
+        </paper-input>
+      </paper-toolbar>
       <div class="panel">
         <iron-autogrow-textarea bind-value="{{actionable.text}}"></iron-autogrow-textarea>
         <template is="dom-repeat" id="containerList" items="{{actionable.containers}}"
                   as="container">
-          <span>{{container.name}}</span>
+          <paper-item>
+            <paper-item-body two-line>
+              <div>{{container.title}}</div>
+              <div secondary>{{container.id}}</div>
+            </paper-item-body>
+            <paper-checkbox></paper-checkbox>
+          </paper-item>
         </template>
         <array-selector id="selector" items="{{actionable.containers}}"
                         selected="{{selectedContainer}}" toggle></array-selector>
       </div>
     </paper-scroll-header-panel>
-    
+
   </template>
+  
   <script>
     'use strict';
-    
+
     (function() {
       class ActionablePanel {
         beforeRegister() {
           this.is = 'actionable-panel';
-  
+
           this.properties = {
             actionable: {
               type: Object,
               value: () => {},
               notify: true
             },
-            
+
             selectedContainer: {
               type: Object,
               value: () => {},
               notify: true
             }
           };
+          
+          this.observers = [
+            'lastContainerChanged(actionable.lastContainer)'
+          ];
         }
         
+        lastContainerChanged(container) {
+          if (!container) {
+            return;
+          }
+          this.selectedContainer = container;
+        }
+
         _editName() {
           if (this.$.name.validate()) {
             this.set('actionable.title', this.$.name.value);
             this.fire('actionableNameChangeAction', {'actionable': this.actionable});
-          }          
+          }
         }
+
+        _doCreateContainer() {
+          this.fire('addContainerAction', {'actionableId': this.actionable.id, 'name': this.$.addContainer.value});
+          this.$.addContainer.value = '';
+          this.$.scrollHeaderPanel.scrollToTop(false);
+        }
+  
+        _createContainer() {
+          this._doCreateContainer();
+        }
+  
+        _createContainerOnEnter(e) {
+          if (e.keyCode === 13) {
+            this._doCreateContainer();
+          }
+        }
+        
       }
-      
+        
       new Polymer(ActionablePanel);
-      
+
     })();
   </script>
 </dom-module>

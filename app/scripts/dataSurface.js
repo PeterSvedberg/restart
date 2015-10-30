@@ -21,6 +21,9 @@ Copyright (c) 2015 Peter Svedberg.
         window.addEventListener('createActionable', e => {
           ds.createActionable(e.detail.value);
         });
+        window.addEventListener('addContainerAction', e => {
+          ds.createContainer(e.detail.actionableId, e.detail.name);
+        });
         window.addEventListener('actionableNameChangeAction', e => {
           ds.changeActionableName(e.detail.actionable);
         });
@@ -30,6 +33,10 @@ Copyright (c) 2015 Peter Svedberg.
         // This listener is just here for testing
         window.addEventListener('createdActionable', e => {
           console.log('createdActionable ' + e.detail.actionable.id);
+        });
+        // This listener is just here for testing
+        window.addEventListener('addedContainer', e => {
+          console.log('addedContainer ' + e.detail.container.title);
         });
         // This listener is just here for testing
         window.addEventListener('changedActionableName', e => {
@@ -49,13 +56,22 @@ Copyright (c) 2015 Peter Svedberg.
     if (isReady()) {
       var actionables = [{
         'id': 'One',
-        'title': 'Daily'
+        'timestamp': 1446119424988,
+        'title': 'Daily',
+        'text': '',
+        'containers': []
        }, {
         'id': 'Two',
-        'title': 'News'
+        'timestamp': 1446119424988,
+        'title': 'News',
+        'text': '',
+        'containers': []
        }, {
         'id': 'Three',
-        'title': 'Weather'
+        'timestamp': 1446119424988,
+        'title': 'Weather',
+        'text': '',
+        'containers': []
       }];
       ds.setActionables(actionables);
     } else {
