@@ -52,7 +52,9 @@ Copyright (c) 2015 Peter Svedberg.
     
     <paper-card id="createDialog" class="hide" elevation="2" heading="Create">
       <div class="card-content">
-        <paper-input id="name" on-keyup="_createOnEnter" autofocus="true" required error-message="A name is required"></paper-input>
+        <paper-input id="name" on-keyup="_createOnEnter" autofocus="true"></paper-input>
+        <template is="dom-if" if="{{isActionable}}"></template>
+        <template is="dom-if" if="{{!isActionable}}"></template>
       </div>
       <div class="card-actions">
         <paper-button on-tap="_cancel"><iron-icon icon="clear"></iron-icon></paper-button>
@@ -73,7 +75,13 @@ Copyright (c) 2015 Peter Svedberg.
             event: {
               type: String,
               value: 'create'
+            },
+            
+            isActionable: {
+              type: Boolean,
+              value: true
             }
+
           };
         }
         
@@ -91,6 +99,14 @@ Copyright (c) 2015 Peter Svedberg.
         
         setPlaceholder(placeholder) {
           this.$.name.placeholder = placeholder;
+        }
+        
+        setRequired(required) {
+          this.$.name.required = required;
+        }
+        
+        setErrorMessage(errorMessage) {
+          this.$.name.errorMessage = errorMessage;
         }
         
         setEvent(event) {

@@ -579,7 +579,9 @@ Copyright (c) 2015 Peter Svedberg.
           var createDialog = document.createElement('create-dialog');
           createDialog.setHeading('New List');
           createDialog.setPlaceholder('Name of list (required)');
-          createDialog.setEvent('createActionable');
+          createDialog.setEvent('create-actionable-action');
+          createDialog.setRequired(true);
+          createDialog.setErrorMessage('A name is required');          
           Polymer.dom(this.$.main).appendChild(createDialog);
         }
         

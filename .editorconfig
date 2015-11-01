@@ -4,8 +4,9 @@
 
 root = true
 
-
 [*]
+es5 = true
+esnext = true
 
 # Change these settings to your own preference
 indent_style = space

@@ -17,8 +17,8 @@ Copyright (c) 2015 Peter Svedberg.
       this.timestamp = Date.now();
       this.title = title;
       this.text = '';
-      this.containers = () => [];
-      this.lastContainer = () => {};
+      this.containers = [];
+      this.lastContainer = {};
     }
   }
     
@@ -48,38 +48,28 @@ Copyright (c) 2015 Peter Svedberg.
             notify: true,
             value: () => {}
           },
-          
-          hashValue: {
-            type: String
-          }
         };       
       }
       
       attached() {
         this.fire('dataSurfaceReady', {bubbles: false});
         console.log('Data surface is attached');
-        if (this.setHashValue()) {
-          console.log('We have an actionable to load ' + this.hashValue);
-          this.loadActionable();
-        }
+        addEventListener('create-actionable-action', e => {
+          this.createActionable(e.detail.value);
+        });
+        addEventListener('add-container-action', e => {
+          this.createContainer(e.detail.actionableId, e.detail.name);
+        });
+        addEventListener('actionable-name-change-action', e => {
+          this.changeActionableName(e.detail.actionable);
+        });
       }
       
-      setHashValue() {
-        var hash = window.location.hash;
-        if (hash.length < 3) {
-          return false;
-        }
-        this.hashValue = hash.substring(2, hash.length);
-        return true;
-      }
-      
-      loadActionable() {
-        for (let a of this.actionables) {
-          if (a.id === this.hashValue) {
-            this.selectedActionable = a;
-            break;
-          }
-        }
+      detached() {
+        console.log('detaching');
+        removeEventListener('actionable-name-change-action', () => {
+          console.log('removeEventListener, actionable-name-change-action');
+        });
       }
       
       _getId() {
@@ -134,7 +124,7 @@ Copyright (c) 2015 Peter Svedberg.
         if (id === this.selectedActionable.id) {
           this.arrayDelete('actionables', this.selectedActionable);
           this.set('selectedActionable', null);
-          // TODO remove item from history
+          console.log('TODO remove item from history');
           window.history.back();
           // Hook for backend?
           this.fire('deletedActionable', {'id': id, 'bubbles': false});

@@ -13,20 +13,6 @@ Copyright (c) 2015 Peter Svedberg.
       ds = document.querySelector('#ds');
       ready = ds !== null && ds !== undefined;
       if (ready) {
-        window.addEventListener('hashchange', () => {
-          if (ds.setHashValue()) {
-            ds.loadActionable();
-          }
-        });
-        window.addEventListener('createActionable', e => {
-          ds.createActionable(e.detail.value);
-        });
-        window.addEventListener('addContainerAction', e => {
-          ds.createContainer(e.detail.actionableId, e.detail.name);
-        });
-        window.addEventListener('actionableNameChangeAction', e => {
-          ds.changeActionableName(e.detail.actionable);
-        });
         window.addEventListener('deleteActionable', e => {
           ds.deleteActionable(e.detail.id);
         });
@@ -59,19 +45,22 @@ Copyright (c) 2015 Peter Svedberg.
         'timestamp': 1446119424988,
         'title': 'Daily',
         'text': '',
-        'containers': []
+        'containers': [],
+        'lastContainer': {}
        }, {
         'id': 'Two',
         'timestamp': 1446119424988,
         'title': 'News',
         'text': '',
-        'containers': []
+        'containers': [],
+        'lastContainer': {}
        }, {
         'id': 'Three',
         'timestamp': 1446119424988,
         'title': 'Weather',
         'text': '',
-        'containers': []
+        'containers': [],
+        'lastContainer': {}
       }];
       ds.setActionables(actionables);
     } else {

@@ -28,6 +28,7 @@ Copyright (c) 2015 Peter Svedberg.
       .actionables-toolbar {
         background-color: var(--primary-background-color);
         border-bottom: 1px solid var(--divider-color);
+        height: 65px;
       }
       
       .actionables-title {
@@ -64,7 +65,7 @@ Copyright (c) 2015 Peter Svedberg.
       }
 
       .delete {
-        margin-right: 16px;
+        margin-right: 24px;
         color: var(--dark-primary-color);
         display: none;
       }
@@ -85,10 +86,11 @@ Copyright (c) 2015 Peter Svedberg.
         <span class="flex"></span>
         <paper-icon-button icon="search"></paper-icon-button>
       </paper-toolbar>
-      <iron-list id="ironList" items="{{actionables}}" selection-enabled selected-item="{{selectedActionable}}">
+      <iron-list id="ironList" items="{{actionables}}" selection-enabled
+                 selected-item="{{selectedActionable}}">
         <template>
           <div>
-            <div id$="[[item.id]]" class$="[[_computeClass(item.id)]]">
+            <div id$="[[item.id]]" class$="[[_computeClass(selected)]]">
               <span class="actionable-name">{{item.title}}</span>
               <iron-icon icon="remove" class="delete" on-tap="onDelete"></iron-icon>
             </div>
@@ -116,21 +118,55 @@ Copyright (c) 2015 Peter Svedberg.
             selectedActionable: {
               type: Object,
               value: () => {},
-              notify: true,
-              observer: '_selectedActionableChanged'
+              notify: true
             },
             
-            lastId: {
-              type: String,
-              value: ''
-            }       
+            hashValue: {
+              type: String
+            }
+
           };
           
         }
         
-        _computeClass(id) {
+        attached() {
+          if (this.setHashValue()) {
+            console.log('We have an actionable to load ' + this.hashValue);
+            this.loadActionable();
+          }
+          addEventListener('hashchange', () => {
+            if (this.setHashValue()) {
+              if (!this.loadActionable()) {
+                console.log('TODO could not find actionable with id ' + window.location.hash);
+              }
+            } else {
+              this.$.ironList.clearSelection();
+            }
+          });
+        }
+        
+        setHashValue() {
+          var hash = window.location.hash;
+          if (hash.length < 3) {
+            return false;
+          }
+          this.hashValue = hash.substring(2, hash.length);
+          return true;
+        }
+        
+        loadActionable() {
+          for (let a of this.actionables) {
+            if (a.id === this.hashValue) {
+              this.$.ironList.selectItem(a);
+              return true;
+            }
+          }
+          return false;
+        }
+      
+        _computeClass(isSelected) {
           var classes = 'item';
-          if (this.selectedActionable && this.selectedActionable.id === id) {
+          if (isSelected) {
             classes += ' active';
           }
           return classes;
@@ -141,27 +177,6 @@ Copyright (c) 2015 Peter Svedberg.
           this.fire('deleteActionable', {'id': this.selectedActionable.id});
         }
 
-        _toggleSelected(isAdd) {
-          if (this.lastId !== '') {
-            var item = document.getElementById(this.lastId);
-            if (item) {
-              Polymer.Base.toggleClass('active', isAdd, item);
-            }
-          }
-        }
-
-        _selectedActionableChanged() {
-          if (this.actionables.length === 0 || !this.selectedActionable || !this.selectedActionable.id) {
-            return;
-          }
-          // remove active class from previous
-          this._toggleSelected(false);
-          this.lastId = this.selectedActionable.id;
-          // add active class to new
-          this._toggleSelected(true);
-          this.distributeContent();
-          window.location.hash = `!${this.selectedActionable.id}`;
-        }
       }
       
       new Polymer(ActionablesList);
