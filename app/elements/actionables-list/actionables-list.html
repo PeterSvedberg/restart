@@ -118,50 +118,69 @@ Copyright (c) 2015 Peter Svedberg.
             selectedActionable: {
               type: Object,
               value: () => {},
-              notify: true
+              notify: true,
+              observer: '_selectedActionableChanged'
             },
             
-            hashValue: {
+            idFromHash: {
               type: String
-            }
+            },
+            
+            navigationInProgress: false
 
           };
           
         }
         
         attached() {
-          if (this.setHashValue()) {
-            console.log('We have an actionable to load ' + this.hashValue);
-            this.loadActionable();
-          }
+          console.log('actionables-list attached');
           addEventListener('hashchange', () => {
-            if (this.setHashValue()) {
-              if (!this.loadActionable()) {
-                console.log('TODO could not find actionable with id ' + window.location.hash);
+            // we want to bypass a window.location.hash set in
+            // _selectedActionableChanged()
+            if (!this.navigationInProgress) {
+              if (this._setIdFromHash()) {
+                this._loadActionable();
+              } else {
+                this.$.ironList.clearSelection();
               }
-            } else {
-              this.$.ironList.clearSelection();
             }
+            // reset to normal operation
+            this.navigationInProgress = false;
           });
         }
         
-        setHashValue() {
+        /*the logic here exist only to set window.location.hash when the selection
+          originates from the list*/
+        _selectedActionableChanged() {
+          // only selection in the list starts with a deselect
+          if (this.selectedActionable === null) {
+            // use it as signal
+            this.navigationInProgress = true;
+            return;
+          }
+          if (this.navigationInProgress) {
+            this.idFromHash = this.selectedActionable.id;
+            window.location.hash = `!${this.selectedActionable.id}`;
+          }
+        }
+        
+        _setIdFromHash() {
           var hash = window.location.hash;
           if (hash.length < 3) {
             return false;
           }
-          this.hashValue = hash.substring(2, hash.length);
+          this.idFromHash = hash.substring(2, hash.length);
           return true;
         }
         
-        loadActionable() {
+        _loadActionable() {
           for (let a of this.actionables) {
-            if (a.id === this.hashValue) {
+            if (a.id === this.idFromHash) {
               this.$.ironList.selectItem(a);
-              return true;
+              return;
             }
           }
-          return false;
+          console.log('TODO could not find actionable with id ' + this.idFromHash);
         }
       
         _computeClass(isSelected) {
@@ -174,7 +193,7 @@ Copyright (c) 2015 Peter Svedberg.
         
         _onDelete(e) {
           e.stopPropagation();
-          this.fire('deleteActionable', {'id': this.selectedActionable.id});
+          this.fire('delete-actionable-action', {'id': this.selectedActionable.id});
         }
 
       }

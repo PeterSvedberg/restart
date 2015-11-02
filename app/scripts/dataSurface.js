@@ -6,88 +6,42 @@ Copyright (c) 2015 Peter Svedberg.
 
   var ds;
   let ready = false;
-  
+
   let isReady = () => {
     if (!ready) {
-      console.log('initializing data surface');
       ds = document.querySelector('#ds');
-      ready = ds !== null && ds !== undefined;
-      if (ready) {
-        window.addEventListener('deleteActionable', e => {
-          ds.deleteActionable(e.detail.id);
-        });
-        // This listener is just here for testing
-        window.addEventListener('createdActionable', e => {
-          console.log('createdActionable ' + e.detail.actionable.id);
-        });
-        // This listener is just here for testing
-        window.addEventListener('addedContainer', e => {
-          console.log('addedContainer ' + e.detail.container.title);
-        });
-        // This listener is just here for testing
-        window.addEventListener('changedActionableName', e => {
-          console.log('changedActionableName ' + e.detail.actionable.title);
-        });
-        // This listener is just here for testing
-        window.addEventListener('changedContainerName', e => {
-          console.log('changedContainerName ' + e.detail.container.title);
-        });
-        // This listener is just here for testing
-        window.addEventListener('deletedActionable', e => {
-          console.log('deletedActionable ' + e.detail.id);
-        });
-        // This listener is just here for testing
-        window.addEventListener('deletedContainer', e => {
-          console.log('deletedContainer ' + e.detail.container.id + ' in actionable' + e.detail.actionableId);
-        });
-      }
+      ready = !(ds === null || ds === undefined);
     }
     return ready;
   };
-  
-  /* exported setActionables */
-  let setActionables = () => {
-    if (isReady()) {
-      var actionables = [{
-        'id': 'One',
-        'timestamp': 1446119424988,
-        'title': 'Daily',
-        'text': '',
-        'containers': [],
-        'lastContainer': {}
-       }, {
-        'id': 'Two',
-        'timestamp': 1446119424988,
-        'title': 'News',
-        'text': '',
-        'containers': [],
-        'lastContainer': {}
-       }, {
-        'id': 'Three',
-        'timestamp': 1446119424988,
-        'title': 'Weather',
-        'text': '',
-        'containers': [],
-        'lastContainer': {}
-      }];
-      ds.setActionables(actionables);
-    } else {
-      console.warn('Data surface is not ready, data binding will not work!');
-    }
-  };
-  
+
   /* exported dsr */
   let dsr = window.addEventListener('dataSurfaceReady', () => {
-    console.log('on dataSurfaceReady');
-    setActionables();
+    window.addEventListener('createdActionable', e => {
+      console.log('createdActionable ' + e.detail.actionable.id);
+    });
+    window.addEventListener('addedContainer', e => {
+      console.log('addedContainer ' + e.detail.container.title);
+    });
+    window.addEventListener('changedActionableName', e => {
+      console.log('changedActionableName ' + e.detail.actionable.title);
+    });
+    window.addEventListener('changedContainerName', e => {
+      console.log('changedContainerName ' + e.detail.container.title);
+    });
+    window.addEventListener('deletedActionable', e => {
+      console.log('deletedActionable ' + e.detail.id);
+    });
+    window.addEventListener('deletedContainer', e => {
+      console.log('deletedContainer ' + e.detail.container.id + ' in actionable' + e.detail.actionableId);
+    });
   });
-  
+
   /* exported getActionables */
   let getActionables = () => {
     if (isReady()) {
       console.log(ds.getActionables());
     } else {
-      console.warn('Data surface is not ready, data binding will not work!');
+      console.warn('Data surface is not ready!');
     }
   };
-  

@@ -52,8 +52,6 @@ Copyright (c) 2015 Peter Svedberg.
       }
       
       attached() {
-        this.fire('dataSurfaceReady', {bubbles: false});
-        console.log('Data surface is attached');
         addEventListener('create-actionable-action', e => {
           this.createActionable(e.detail.value);
         });
@@ -66,12 +64,43 @@ Copyright (c) 2015 Peter Svedberg.
         addEventListener('container-name-change-action', e => {
           this.changeContainerName(e.detail);
         });
+        addEventListener('delete-actionable-action', e => {
+          this.deleteActionable(e.detail.id);
+        });
         addEventListener('delete-container-action', e => {
           this.deleteContainer(e.detail.actionableId, e.detail.container);
+        });
+        this.fire('dataSurfaceReady', {bubbles: false});
+        console.log('Data surface is attached');
+        this.async(() => {
+          this.actionables = [{
+            'id': 'One',
+            'timestamp': 1446119424988,
+            'title': 'Daily',
+            'text': '',
+            'containers': [],
+            'lastContainer': {}
+           }, {
+            'id': 'Two',
+            'timestamp': 1446119424988,
+            'title': 'News',
+            'text': '',
+            'containers': [],
+            'lastContainer': {}
+           }, {
+            'id': 'Three',
+            'timestamp': 1446119424988,
+            'title': 'Weather',
+            'text': '',
+            'containers': [],
+            'lastContainer': {}
+          }];
         });
       }
       
       detached() {
+        // TODO this is never getting called
+        window.alert('detaching data-surface');
         console.log('detaching');
         removeEventListener('actionable-name-change-action', () => {
           console.log('removeEventListener, actionable-name-change-action');

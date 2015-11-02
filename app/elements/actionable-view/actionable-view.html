@@ -203,18 +203,44 @@ Copyright (c) 2015 Peter Svedberg.
         }
         
         attached() {
+          console.log('actionable-view attached');
           addEventListener('one-line-text-editor-on-close', e => {
             if (e.detail.actionableId !== this.actionable.id) {
-              console.log('we lost it');
+              console.log('lost edit');
               return;
             } else if (e.detail.containerId === this.selectedContainer.id) {
               this.set('selectedContainer.title', e.detail.value.trim());
-              this.fire('container-name-change-action',  {'actionableId': this.actionable.id, 'container':this.selectedContainer});
+              this.fire('container-name-change-action',  {'actionableId': this.actionable.id, 'container': this.selectedContainer});
+            } else {
+              console.log('If this happens a lot, we need to put a remedy here.');
             }
           });
+          // hack to set off an actionable load
+          var tmp = window.location.hash;
+          window.location.hash = '';
+          window.location.hash = tmp;
         }
         
+        _onActionableChange() {
+          this.showText = this.actionable && this.actionable.text && this.actionable.text.length > 0;
+          var showToolbar = this.actionable && this.actionable.id;
+          this.querySelector('#toolbar').toggleClass('hide', !showToolbar);
+        }
+
         _lastContainerChanged(container) {
+          this._doToggleContainerSelection(container);
+        }
+        
+        _toggleShowText() {
+          this.showText = !this.showText;
+        }
+
+        _toggleContainerSelection(e) {
+          this._doToggleContainerSelection(this.$.containerList.itemForElement(e.target));
+          e.stopPropagation();
+        }
+
+        _doToggleContainerSelection(container) {
           if (this.lastSelected && this.lastSelected.id) {
             this._deactivateLastSelected();
           }
@@ -227,16 +253,6 @@ Copyright (c) 2015 Peter Svedberg.
               this._activateSelected();
             });
           }
-        }
-        
-        _onActionableChange() {
-          this.showText = this.actionable && this.actionable.text && this.actionable.text.length > 0;
-          var showToolbar = this.actionable && this.actionable.id;
-          this.querySelector('#toolbar').toggleClass('hide', !showToolbar);
-        }
-
-        _toggleShowText() {
-          this.showText = !this.showText;
         }
 
         _deactivateLastSelected() {
@@ -253,24 +269,6 @@ Copyright (c) 2015 Peter Svedberg.
           }
         }
         
-        _toggleContainerSelection(e) {
-          this._doToggleContainerSelection(this.$.containerList.itemForElement(e.target));
-          e.stopPropagation();
-        }
-
-        _doToggleContainerSelection(container) {
-          if (this.lastSelected && this.lastSelected.id) {
-            this._deactivateLastSelected();
-          }
-          if (container && container.id) {
-            this.$.selector.select(container);
-          }
-          if (this.selectedContainer && this.selectedContainer.id) {
-            this.lastSelected = this.selectedContainer;
-            this._activateSelected();
-          }
-        }
-
         _onDelete(e) {
           e.stopPropagation();
           this.fire('delete-container-action', {'actionableId': this.actionable.id, 'container': this.selectedContainer});
