@@ -1,0 +1,324 @@
+
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../one-line-text-editor/one-line-text-editor.html">
+
+<dom-module id="actionable-view">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        height: 100%;
+        background-color: var(--primary-background-color);
+        --iron-autogrow-textarea: {
+          border-bottom: 1px solid var(--light-divider-color);
+          padding: 0;
+        }
+        --paper-input-container-underline-focus: {
+          height: 1px;
+        }
+        --paper-input-container-invalid-color: var(--accent-color);
+        --paper-input-container-focus-color: var(--primary-color);
+      }
+
+      paper-scroll-header-panel {
+        @apply(--layout-flex);     
+      }
+
+      paper-icon-button {
+        color: var(--button-secondary-color);
+      }
+
+      .main-toolbar {
+        background-color: var(--primary-background-color);
+        border-bottom: 1px solid var(--divider-color);
+        height: 89px;
+      }
+
+      .main-toolbar.hide {
+        display: none;
+      }
+
+      #name {
+        --paper-input-container-input-color: var(--dark-primary-color);
+        --paper-input-container-color: var(--primary-background-color);
+        --paper-input-container-input: {
+          font-size: 24px;
+          font-weight: 300;
+        }
+        --paper-input-container: {
+          padding-bottom: 28px;
+        }
+      }
+
+      #addContainer {
+        --paper-input-container-color: var(--button-secondary-color);
+        --paper-input-container-underline: {
+          color: var(--light-divider-color);
+        }
+        --paper-input-container-input: {
+          font-size: 16px;
+          font-weight: 300;
+          margin-left: 16px;
+        }
+        --paper-input-container: {
+          padding: 0;
+        }
+      }
+
+      .panel {
+        @apply(--layout-vertical);
+        margin: 16px;
+        color: var(--primary-text-color);
+      }
+
+      iron-autogrow-textarea {
+        border: none;
+        margin: 0 12px 16px 0;
+        padding: 0;
+        display: flex;
+        width: auto;
+      }
+
+      .item {
+        position: relative;
+        @apply(--layout-horizontal);
+        font-weight: 300;
+        height: 48px;
+        line-height: 48px;
+        font-size: 14px;
+      }
+
+      .item:focus {
+        outline: 0;
+      }
+
+      .item.active {
+      }
+
+      .container-name {
+        font-size: 14px;
+      }
+      
+      .spreader {
+        @apply(--layout-flex);
+      }
+      
+      .item.active .container-name {
+        font-weight: normal;
+      }
+
+      .delete {
+        margin: 12px 8px 0 0;
+        color: var(--dark-primary-color);
+        display: none;
+      }
+      
+      .item.active .delete {
+        display: inline;
+      }
+
+      .item.active .delete:hover {
+        color: var(--accent-color);
+      }
+      
+    </style>
+
+    <paper-scroll-header-panel id="scrollHeaderPanel" scroll-away-topbar condenses>
+      <paper-toolbar id="toolbar" class="main-toolbar">
+        <paper-input id="name" value="{{actionable.title}}" on-blur="_editName" required
+                     error-message="A name is required"></paper-input>
+        <span class="flex"></span>
+        <template is="dom-if" if="{{!showText}}">
+          <paper-icon-button icon="add" on-tap="_toggleShowText"></paper-icon-button>
+        </template>
+        <paper-input id="addContainer" class="bottom fit" no-label-float
+                     label="&nbsp;&nbsp;&nbsp;&nbsp;Add new item"
+                     on-keyup="_createContainerOnEnter">
+        </paper-input>
+      </paper-toolbar>
+      <div class="panel">
+        <template is="dom-if" if="{{showText}}">
+          <iron-autogrow-textarea id="actionableText" bind-value="{{actionable.text}}" autofocus></iron-autogrow-textarea>
+        </template>
+        <template id="containerList" is="dom-repeat" as="container"
+                  items="{{actionable.containers}}">
+          <div>
+            <div id$="[[container.id]]" class="item">
+              <label class="container-name" on-tap="_editContainerName">{{container.title}}</label>
+              <span class="spreader" on-tap="_toggleContainerSelection"></span>
+              <iron-icon icon="remove" class="delete" on-tap="_onDelete"></iron-icon>
+            </div>
+          </div>
+        </template>
+        <array-selector id="selector" items="{{actionable.containers}}"
+                        selected="{{selectedContainer}}" toggle>
+        </array-selector>
+      </div>
+    </paper-scroll-header-panel>
+
+  </template>
+
+  <script>
+    'use strict';
+
+    (function() {
+      class ActionablePanel {
+        beforeRegister() {
+          this.is = 'actionable-view';
+
+          this.properties = {
+            actionable: {
+              type: Object,
+              value: () => {},
+              notify: true,
+              observer: '_onActionableChange'
+            },
+
+            selectedContainer: {
+              type: Object,
+              value: () => {},
+              notify: true,
+            },
+
+            lastSelected: {
+              type: Object,
+              value: () => {}
+            },
+            
+            showText: {
+              type: Boolean,
+              value: false
+            }
+            
+          };
+          
+          this.observers = [
+            '_lastContainerChanged(actionable.lastContainer)'
+          ];
+        }
+        
+        attached() {
+          addEventListener('one-line-text-editor-on-close', e => {
+            if (e.detail.actionableId !== this.actionable.id) {
+              console.log('we lost it');
+              return;
+            } else if (e.detail.containerId === this.selectedContainer.id) {
+              this.set('selectedContainer.title', e.detail.value.trim());
+              this.fire('container-name-change-action',  {'actionableId': this.actionable.id, 'container':this.selectedContainer});
+            }
+          });
+        }
+        
+        _lastContainerChanged(container) {
+          if (this.lastSelected && this.lastSelected.id) {
+            this._deactivateLastSelected();
+          }
+          if (container && container.id) {
+            this.$.selector.select(container);
+          }
+          if (this.selectedContainer && this.selectedContainer.id) {
+            this.lastSelected = this.selectedContainer;
+            this.async(() => {
+              this._activateSelected();
+            });
+          }
+        }
+        
+        _onActionableChange() {
+          this.showText = this.actionable && this.actionable.text && this.actionable.text.length > 0;
+          var showToolbar = this.actionable && this.actionable.id;
+          this.querySelector('#toolbar').toggleClass('hide', !showToolbar);
+        }
+
+        _toggleShowText() {
+          this.showText = !this.showText;
+        }
+
+        _deactivateLastSelected() {
+          var node = document.getElementById(this.lastSelected.id);
+          if (node && node.classList) {
+            node.classList.remove('active');
+          }
+        }
+        
+        _activateSelected() {
+          var node = document.getElementById(this.lastSelected.id);
+          if (node && node.classList) {
+            node.classList.add('active');
+          }
+        }
+        
+        _toggleContainerSelection(e) {
+          this._doToggleContainerSelection(this.$.containerList.itemForElement(e.target));
+          e.stopPropagation();
+        }
+
+        _doToggleContainerSelection(container) {
+          if (this.lastSelected && this.lastSelected.id) {
+            this._deactivateLastSelected();
+          }
+          if (container && container.id) {
+            this.$.selector.select(container);
+          }
+          if (this.selectedContainer && this.selectedContainer.id) {
+            this.lastSelected = this.selectedContainer;
+            this._activateSelected();
+          }
+        }
+
+        _onDelete(e) {
+          e.stopPropagation();
+          this.fire('delete-container-action', {'actionableId': this.actionable.id, 'container': this.selectedContainer});
+        }
+
+        _editName() {
+          if (this.$.name && this.$.name.validate()) {
+            this.set('actionable.title', this.$.name.value);
+            this.fire('actionable-name-change-action', {'actionable': this.actionable});
+          }
+        }
+
+        _editContainerName(e) {
+          this.pendingElement = this.$.containerList.itemForElement(e.target);
+          if (this.pendingElement && this.pendingElement.id) {
+            if (this.selectedContainer && this.selectedContainer.id && this.pendingElement.id === this.selectedContainer.id) {
+              this._doEditContainerName(this.pendingElement);
+            } else {
+              this._doToggleContainerSelection(this.pendingElement);
+              this.pendingElement = null;
+            }
+          }
+        }
+
+        _doEditContainerName() {
+          var textEditor = document.createElement('one-line-text-editor');
+          textEditor.setValue(this.selectedContainer.title);
+          textEditor.setActionableId(this.actionable.id);
+          textEditor.setContainerId(this.selectedContainer.id);
+          document.getElementById(this.selectedContainer.id).appendChild(textEditor);
+        }
+
+        _createContainer() {
+          this.fire('add-container-action', {'actionableId': this.actionable.id, 'name': this.$.addContainer.value});
+          this.$.addContainer.value = '';
+          this.$.scrollHeaderPanel.scrollToTop(false);
+        }
+
+        _createContainerOnEnter(e) {
+          if (e.keyCode === 13) {
+            this._createContainer();
+          }
+        }
+        
+      }
+        
+      new Polymer(ActionablePanel);
+
+    })();
+  </script>
+</dom-module>

@@ -1,0 +1,141 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="one-line-text-editor">
+  <template>
+    <style>
+      :host {
+        display: block;
+        --paper-input-container-input-color: var(--primary-text-color);
+        --paper-input-container-focus-color: var(--primary-color);
+        --paper-input-container-invalid-color: var(--accent-color);
+        --paper-input-container: {
+          position: absolute;
+          left: 0px;
+          top: -20px;
+          width: 280px;
+          height: 32px;
+          line-height: 32px;          
+        }
+        --paper-input-container-input: {
+          background-color: var(--primary-background-color);
+          font-size: 14px;
+        }
+      }
+      
+      #name {
+        z-index: 6;
+        opacity: 1;
+        transition: opacity 0.3s ease-in-out 0.02s;        
+        background-color: var(--primary-background-color);
+      }
+  
+      #name.hide {
+        opacity: 0;
+      }      
+    </style>
+    
+      <paper-input id="name" on-keypress="_doneOnKeyPress" on-blur="_doneOnBlur"
+                   autofocus="true"></paper-input>
+        
+ </template>
+  
+  <script>
+    'use strict';
+    
+    (function() {
+      class OneLineTextEditor {
+        beforeRegister() {
+          this.is = 'one-line-text-editor';
+          
+          this.properties = {
+            event: {
+              type: String,
+              value: 'one-line-text-editor-on-close'
+            },
+            
+            actionableId: {
+              type: String
+            },
+            
+            containerId: {
+              type: String
+            }
+            
+          };
+        }
+        
+        attached() {
+          Polymer.Base.toggleClass('hide', false, this.$.name);
+        }
+        
+        setValue(value) {
+          this.$.name.value = value;
+        }
+        
+        setActionableId(actionableId) {
+          this.actionableId = actionableId;
+        }
+        
+        setContainerId(containerId) {
+          this.containerId = containerId;
+        }
+        
+        setLabel(label) {
+          this.$.name.label = label;
+        }
+        
+        setPlaceholder(placeholder) {
+          this.$.name.placeholder = placeholder;
+        }
+        
+        setRequired(required) {
+          this.$.name.required = required;
+        }
+        
+        setErrorMessage(errorMessage) {
+          this.$.name.errorMessage = errorMessage;
+        }
+        
+        setEvent(event) {
+          this.event = event;
+        }
+        
+        _cancel() {
+          Polymer.Base.toggleClass('hide', true, this.$.name);
+          this.addEventListener('transitionend', this.remove);
+        }
+        
+        _done() {
+          if (this.$.name.validate()) {
+            var value = this.$.name.value;
+            this.fire(this.event, {'actionableId': this.actionableId, 'containerId': this.containerId, 'value': value, 'bubbles': false});
+            Polymer.Base.toggleClass('hide', true, this.$.name);
+            this.addEventListener('transitionend', this.remove);
+          }          
+        }
+  
+        _doneOnBlur() {
+          this._done();
+        }
+  
+        _doneOnKeyPress(e) {
+          if (e.keyCode === 13) {
+            this._done();
+          } else if (e.keyCode === 27) {
+            this._cancel();
+          }
+        }
+      }
+      
+      new Polymer(OneLineTextEditor);
+        
+    })();
+
+  </script>
+</dom-module>
