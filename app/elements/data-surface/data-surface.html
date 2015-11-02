@@ -63,6 +63,12 @@ Copyright (c) 2015 Peter Svedberg.
         addEventListener('actionable-name-change-action', e => {
           this.changeActionableName(e.detail.actionable);
         });
+        addEventListener('container-name-change-action', e => {
+          this.changeContainerName(e.detail);
+        });
+        addEventListener('delete-container-action', e => {
+          this.deleteContainer(e.detail.actionableId, e.detail.container);
+        });
       }
       
       detached() {
@@ -98,6 +104,7 @@ Copyright (c) 2015 Peter Svedberg.
         this.unshift('actionables', a);
         this.set('selectedActionable', a);
         // Hook for backend?
+        console.log('TODO Persistence...');
         this.fire('createdActionable', {'actionable': a, 'bubbles': false});
       }
         
@@ -109,22 +116,30 @@ Copyright (c) 2015 Peter Svedberg.
         let c = new Container(this._getId(), name);
         this.unshift('selectedActionable.containers', c);
         this.set('selectedActionable.lastContainer', c);
+        console.log('TODO Persistence...');
         // Hook for backend?
         this.fire('addedContainer', {'container': c, 'bubbles': false});
       }
         
       changeActionableName(actionable) {
-        actionable.timestamp = Date.now();
-        // Do persistence...
+        this.selectedActionable.timestamp = Date.now();
+        console.log('TODO Persistence...');
         // Hook for backend?
         this.fire('changedActionableName', {'actionable': actionable, 'bubbles': false});
+      }
+        
+      changeContainerName(handle) {
+        this.selectedActionable.timestamp = Date.now();
+        console.log('TODO Persistence...');
+        // Hook for backend?
+        this.fire('changedContainerName', {'actionableId': handle.actionableId, 'container': handle.container, 'bubbles': false});
       }
         
       deleteActionable(id) {
         if (id === this.selectedActionable.id) {
           this.arrayDelete('actionables', this.selectedActionable);
           this.set('selectedActionable', null);
-          console.log('TODO remove item from history');
+          console.log('TODO Remove item from history. Persistence...');
           window.history.back();
           // Hook for backend?
           this.fire('deletedActionable', {'id': id, 'bubbles': false});
@@ -132,6 +147,18 @@ Copyright (c) 2015 Peter Svedberg.
           console.log('deleteActionable, id mismatch! id:' + id + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
         }
       }
+      
+      deleteContainer(actionableId, container) {
+        if (actionableId === this.selectedActionable.id) {
+          this.arrayDelete('selectedActionable.containers', container);
+          console.log('TODO Persistence...');
+          // Hook for backend?
+          this.fire('deletedContainer', {'actionableId': actionableId, 'container': container, 'bubbles': false});
+        } else {
+          console.log('deleteContainer, id mismatch! actionableId:' + actionableId + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
+        }
+      }
+
     }
     
     new Polymer(DataSurface);

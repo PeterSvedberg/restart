@@ -29,8 +29,16 @@ Copyright (c) 2015 Peter Svedberg.
           console.log('changedActionableName ' + e.detail.actionable.title);
         });
         // This listener is just here for testing
+        window.addEventListener('changedContainerName', e => {
+          console.log('changedContainerName ' + e.detail.container.title);
+        });
+        // This listener is just here for testing
         window.addEventListener('deletedActionable', e => {
           console.log('deletedActionable ' + e.detail.id);
+        });
+        // This listener is just here for testing
+        window.addEventListener('deletedContainer', e => {
+          console.log('deletedContainer ' + e.detail.container.id + ' in actionable' + e.detail.actionableId);
         });
       }
     }
