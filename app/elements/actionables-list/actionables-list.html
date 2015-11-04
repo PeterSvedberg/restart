@@ -112,7 +112,8 @@ Copyright (c) 2015 Peter Svedberg.
             actionables: {
               type: Array,
               value: () => [],
-              notify: true
+              notify: true,
+              observer: '_actionablesChanged'
             },
     
             selectedActionable: {
@@ -126,8 +127,12 @@ Copyright (c) 2015 Peter Svedberg.
               type: String
             },
             
-            navigationInProgress: false
+            navigationInProgress: false,
 
+            observers: [
+              '_actionablesAddedOrRemoved(actionables.splices)'
+            ]
+            
           };
           
         }
@@ -149,9 +154,18 @@ Copyright (c) 2015 Peter Svedberg.
           });
         }
         
+        _actionablesAddedOrRemoved(changeRecord) {
+          console.log('actionablesAddedOrRemoved');
+        }
+        
+        _actionablesChanged() {
+          console.log('_actionablesChanged');
+        }
+        
         /*the logic here exist only to set window.location.hash when the selection
           originates from the list*/
         _selectedActionableChanged() {
+          console.log('_selectedActionableChanged');
           // only selection in the list starts with a deselect
           if (this.selectedActionable === null) {
             // use it as signal
