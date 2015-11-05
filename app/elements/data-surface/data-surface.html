@@ -140,6 +140,8 @@ Copyright (c) 2015 Peter Svedberg.
         let a = new Actionable(this._getId(), name);
         this.unshift('actionables', a);
         this.set('selectedActionable', a);
+        window.location.hash = `!${a.id}`;
+        this.fire('navigation-event', {'bubbles': false});
         // Hook for backend?
         this.fire('createdActionable', {'actionable': a, 'bubbles': false});
       }
@@ -171,9 +173,9 @@ Copyright (c) 2015 Peter Svedberg.
       deleteActionable(id) {
         if (id === this.selectedActionable.id) {
           this.arrayDelete('actionables', this.selectedActionable);
-          this.set('selectedActionable', null);
           console.log('TODO Remove item from history.');
           window.history.back();
+          this.fire('navigation-event', {'bubbles': false});
           // Hook for backend?
           this.fire('deletedActionable', {'id': id, 'bubbles': false});
         } else {

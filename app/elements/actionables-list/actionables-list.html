@@ -128,13 +128,12 @@ Copyright (c) 2015 Peter Svedberg.
             },
             
             navigationInProgress: false,
-
-            observers: [
-              '_actionablesAddedOrRemoved(actionables.splices)'
-            ]
-            
+            isLoading: true
           };
           
+          this.observers = [
+              '_actionablesAddedOrRemoved(actionables.splices)'
+          ];
         }
         
         attached() {
@@ -149,13 +148,20 @@ Copyright (c) 2015 Peter Svedberg.
                 this.$.ironList.clearSelection();
               }
             }
-            // reset to normal operation
+          });
+          addEventListener('navigation-event', () => {
             this.navigationInProgress = false;
+            this._handleNavigationEvent();
           });
         }
         
-        _actionablesAddedOrRemoved(changeRecord) {
-          console.log('actionablesAddedOrRemoved');
+        _actionablesAddedOrRemoved(/* jshint unused: false */changeRecord) {
+          console.log('_actionablesAddedOrRemoved');
+          if (this.isLoading) {
+            this.navigationInProgress = true;
+          } else {
+            this.$.ironList.clearSelection();
+          }
         }
         
         _actionablesChanged() {
@@ -165,7 +171,7 @@ Copyright (c) 2015 Peter Svedberg.
         /*the logic here exist only to set window.location.hash when the selection
           originates from the list*/
         _selectedActionableChanged() {
-          console.log('_selectedActionableChanged');
+          console.log('_selectedActionableChanged ' + this.selectedActionable);
           // only selection in the list starts with a deselect
           if (this.selectedActionable === null) {
             // use it as signal
@@ -173,9 +179,16 @@ Copyright (c) 2015 Peter Svedberg.
             return;
           }
           if (this.navigationInProgress) {
-            this.idFromHash = this.selectedActionable.id;
-            window.location.hash = `!${this.selectedActionable.id}`;
+            this._handleNavigationEvent();
           }
+        }
+        
+        _handleNavigationEvent() {
+          if (!this.selectedActionable) {
+            return;
+          }
+          this.idFromHash = this.selectedActionable.id;
+          window.location.hash = `!${this.selectedActionable.id}`; 
         }
         
         _setIdFromHash() {
@@ -207,6 +220,7 @@ Copyright (c) 2015 Peter Svedberg.
         
         _onDelete(e) {
           e.stopPropagation();
+          this.navigationInProgress = false;
           this.fire('delete-actionable-action', {'id': this.selectedActionable.id});
         }
 
