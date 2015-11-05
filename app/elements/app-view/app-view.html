@@ -32,6 +32,10 @@ Copyright (c) 2015 Peter Svedberg.
         overflow: hidden;
       }
 
+      .header {
+        height: 8px;
+      }
+      
       #main {
         @apply(--layout-flex);
         @apply(--layout-horizontal);
@@ -70,6 +74,10 @@ Copyright (c) 2015 Peter Svedberg.
       
       /* s */
       @media (min-width: 0px) and (max-width: 600px) {
+        .header {
+          height: 0px;
+        }
+      
         .action-panel {
           margin: 0 16px 0 16px;
         }
@@ -101,6 +109,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* m */
       @media (min-width: 601px) and (max-width: 1280px) {
+        .header {
+          height: 8px;
+        }
+      
         .action-panel {
           margin: 0 24px 0 24px;
         }
@@ -127,6 +139,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* l */
       @media (min-width: 1281px) and (max-width: 1440px) {
+        .header {
+          height: 16px;
+        }
+      
         #navigation {
           @apply(--standard-navigation);        
         }
@@ -149,6 +165,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* xl */
       @media (min-width: 1441px) and (max-width: 1600px) {
+        .header {
+          height: 24px;
+        }
+      
         .action-panel {
           margin: 0 40px 0 40px;
         }
@@ -183,6 +203,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* xxl */
       @media (min-width: 1601px) and (max-width: 1920px) {
+        .header {
+          height: 24px;
+        }
+      
         .action-panel {
           margin: 0 48px 0 48px;
         }
@@ -217,6 +241,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* xxxl */
       @media (min-width: 1921px) {
+        .header {
+          height: 24px;
+        }
+      
         .action-panel {
           margin: 0 48px 0 48px;
         }
@@ -252,6 +280,10 @@ Copyright (c) 2015 Peter Svedberg.
     
       /* smallPortrait */
       @media (min-width: 0px) and (max-width: 360px) and (orientation: portrait) {
+        .header {
+          height: 0px;
+        }
+      
         .action-panel {
           margin: 0 8px 0 8px;
         }
@@ -291,6 +323,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* mediumPortrait */
       @media (min-width: 361px) and (max-width: 600px) and (orientation: portrait) {
+        .header {
+          height: 0px;
+        }
+      
         .action-panel {
           margin: 0 16px 0 16px;
         }
@@ -322,6 +358,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* largePortrait */
       @media (min-width: 601px) and (max-width: 840px) and (orientation: portrait) {
+        .header {
+          height: 8px;
+        }
+      
         .action-panel {
           margin: 0 16px 0 16px;
         }
@@ -348,6 +388,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* xlPortrait */
       @media (min-width: 841px) and (max-width: 1280px) and (orientation: portrait) {
+        .header {
+          height: 8px;
+        }
+      
         .action-panel {
           margin: 0 24px 0 24px;
         }
@@ -375,6 +419,10 @@ Copyright (c) 2015 Peter Svedberg.
       
       /* smallLandscape */
       @media (min-width: 0px) and (max-width: 480px) and (orientation: landscape) {
+        .header {
+          height: 0px;
+        }
+      
         .action-panel {
           margin: 0 16px 0 16px;
         }
@@ -406,6 +454,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* mediumLandscape */
       @media (min-width: 481px) and (max-width: 600px) and (orientation: landscape) {
+        .header {
+          height: 0px;
+        }
+      
         .action-panel {
           margin: 0 16px 0 16px;
         }
@@ -437,6 +489,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* largeLandscape */
       @media (min-width: 601px) and (max-width: 960px) and (orientation: landscape) {
+        .header {
+          height: 8px;
+        }
+      
         .action-panel {
           margin: 0 16px 0 16px;
         }
@@ -463,6 +519,10 @@ Copyright (c) 2015 Peter Svedberg.
       }
       /* xlLandscape */
       @media (min-width: 961px) and (max-width: 1280px) and (orientation: landscape) {
+        .header {
+          height: 8px;
+        }
+      
         .action-panel {
           margin: 0 24px 0 24px;
         }
@@ -493,6 +553,8 @@ Copyright (c) 2015 Peter Svedberg.
     <layout-state id="ls" media="{{media}}"></layout-state>
     <data-surface id="ds" actionables="{{actionables}}" selected-actionable="{{selectedActionable}}"></data-surface>
     <div class="view">
+      <div class="header">
+      </div>
       <div id="main">
         <paper-material id="navigation" elevation="1">
           <actionables-list id="actionablesList" actionables="{{actionables}}" selected-actionable="{{selectedActionable}}"></actionables-list>

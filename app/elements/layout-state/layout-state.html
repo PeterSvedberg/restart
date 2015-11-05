@@ -91,19 +91,7 @@ Copyright (c) 2015 Peter Svedberg.
       }
       
       _computeHeight() {
-        var h = this.layoutHeight;
-        if (this.isOneColumn) {
-          h -= 0; 
-        } else if (this.isTwoColumn) {
-          if (this.media.m || this.media.xlPortrait || this.media.mediumLandscape || this.media.largeLandscape || this.media.xlLandscape) {
-            h -= 16;
-          } else {
-            h -= 24;
-          }
-        } else if (this.isThreeColumn) {
-          h -= 32;
-        }
-        return h;
+        return this.layoutHeight - 5;
       }
       
       _removeToggleNavigationClass() {
