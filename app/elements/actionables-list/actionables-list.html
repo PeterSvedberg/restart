@@ -4,6 +4,11 @@ The MIT License applies unless otherwise noted. See LICENSE.md for details.
 Copyright (c) 2015 Peter Svedberg.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <dom-module id="actionables-list">
   <template>
@@ -80,7 +85,7 @@ Copyright (c) 2015 Peter Svedberg.
       
     </style>
 
-    <paper-scroll-header-panel scrollAwayTopbar condenses>
+    <paper-scroll-header-panel scroll-away-topbar condenses>
       <paper-toolbar class="actionables-toolbar">
         <div class="actionables-title">Lists</div>
         <span class="flex"></span>
@@ -147,6 +152,8 @@ Copyright (c) 2015 Peter Svedberg.
               } else {
                 this.$.ironList.clearSelection();
               }
+            } else {
+              this.navigationInProgress = false;
             }
           });
           addEventListener('navigation-event', () => {
@@ -159,6 +166,7 @@ Copyright (c) 2015 Peter Svedberg.
           console.log('_actionablesAddedOrRemoved');
           if (this.isLoading) {
             this.navigationInProgress = true;
+            this.isLoading = false;
           } else {
             this.$.ironList.clearSelection();
           }
@@ -204,6 +212,7 @@ Copyright (c) 2015 Peter Svedberg.
           for (let a of this.actionables) {
             if (a.id === this.idFromHash) {
               this.$.ironList.selectItem(a);
+              this.navigationInProgress = false;
               return;
             }
           }
