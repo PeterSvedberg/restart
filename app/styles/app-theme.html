@@ -34,28 +34,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     --small-navigation: {
       height: 100%;
       width: 0;
-      transition: width 0.3s ease-in-out 0.02s;        
+      /*transition: width 0.3s ease-in-out 0.02s;        */
     }
     --medium-navigation: {
       height: 100%;
       max-width: 320px;
       width: 33%;
       margin-left: 16px;
-      transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;
+      opacity: 1;
+      /*transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;*/
     }
     --standard-navigation: {
       height: 100%;
       max-width: 320px;
       width: 33%;
       margin-left: 24px;
-      transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;
+      opacity: 1;
+      /*transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;*/
     }
     --large-navigation: {
       height: 100%;
       max-width: 400px;
       width: 33%;
       margin-left: 40px;
-      transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;        
+      opacity: 1;
+      /*transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;        */
     }
     --small-navigation-toggle: {
       width: 100%;
@@ -63,10 +66,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     --standard-navigation-toggle: {
       width: 0;
       margin-left: 0;
+      opacity: 0;
     }
     --large-navigation-toggle: {
       width: 0;
       margin-left: 0;
+      opacity: 0;
     }
     --medium-actionable: {
       @apply(--layout-flex);
@@ -87,30 +92,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       height: 100%;
       max-width: 320px;
       width: 0;
-      transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        
       margin-right: 0;
+      opacity: 0;
+      /*transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        */
     }
     --standard-more-actions: {
       height: 100%;
       max-width: 320px;
       width: 0;
-      transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        
       margin-right: 0;
+      opacity: 0;
+      /*transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        */
     }
     --large-more-actions: {
       height: 100%;
       max-width: 400px;
       width: 33%;
       margin-right: 40px;
-      transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        
+      opacity: 1;
+      /*transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        */
     }
     --standard-more-actions-toggle: {
       width: 33%;
       margin-right: 24px;
+      opacity: 1;
     }
     --large-more-actions-toggle: {
       width: 0;
       margin-right: 0;
+      opacity: 0;
     }
   }
 </style>
