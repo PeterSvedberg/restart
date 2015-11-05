@@ -132,8 +132,7 @@ Copyright (c) 2015 Peter Svedberg.
               type: String
             },
             
-            navigationInProgress: false,
-            isLoading: true
+            navigationInProgress: false
           };
           
           this.observers = [
@@ -149,14 +148,13 @@ Copyright (c) 2015 Peter Svedberg.
             if (!this.navigationInProgress) {
               if (this._setIdFromHash()) {
                 this._loadActionable();
-              } else {
-                this.$.ironList.clearSelection();
               }
             } else {
               this.navigationInProgress = false;
             }
           });
           addEventListener('navigation-event', () => {
+            this.$.ironList.clearSelection();
             this.navigationInProgress = false;
             this._handleNavigationEvent();
           });
@@ -164,12 +162,6 @@ Copyright (c) 2015 Peter Svedberg.
         
         _actionablesAddedOrRemoved(/* jshint unused: false */changeRecord) {
           console.log('_actionablesAddedOrRemoved');
-          if (this.isLoading) {
-            this.navigationInProgress = true;
-            this.isLoading = false;
-          } else {
-            this.$.ironList.clearSelection();
-          }
         }
         
         _actionablesChanged() {
@@ -179,7 +171,7 @@ Copyright (c) 2015 Peter Svedberg.
         /*the logic here exist only to set window.location.hash when the selection
           originates from the list*/
         _selectedActionableChanged() {
-          console.log('_selectedActionableChanged ' + this.selectedActionable);
+          //console.log('_selectedActionableChanged ' + this.selectedActionable);
           // only selection in the list starts with a deselect
           if (this.selectedActionable === null) {
             // use it as signal
