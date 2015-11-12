@@ -18,7 +18,7 @@ Copyright (c) 2015 Peter Svedberg.
   /* exported dsr */
   let dsr = window.addEventListener('dataSurfaceReady', () => {
     window.addEventListener('createdActionable', e => {
-      console.log('createdActionable ' + e.detail.actionable.id);
+      console.log('createdActionable ' + e.detail.actionable.title);
     });
     window.addEventListener('addedContainer', e => {
       console.log('addedContainer ' + e.detail.container.title);
@@ -27,10 +27,16 @@ Copyright (c) 2015 Peter Svedberg.
       console.log('changedActionableName ' + e.detail.actionable.title);
     });
     window.addEventListener('changedContainerName', e => {
-      console.log('changedContainerName ' + e.detail.container.title);
+      console.log('changedContainerName ' + e.detail.newContainer.title);
+    });
+    window.addEventListener('changedContainerLink', e => {
+      console.log('changedContainerLink ' + e.detail.newContainer.link);
+    });
+    window.addEventListener('changedActionableText', e => {
+      console.log('changedActionableText ' + e.detail.actionable.text);
     });
     window.addEventListener('deletedActionable', e => {
-      console.log('deletedActionable ' + e.detail.id);
+      console.log('deletedActionable ' + e.detail.actionable);
     });
     window.addEventListener('deletedContainer', e => {
       console.log('deletedContainer ' + e.detail.container.id + ' in actionable' + e.detail.actionableId);

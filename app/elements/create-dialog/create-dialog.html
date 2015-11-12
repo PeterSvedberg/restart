@@ -55,7 +55,7 @@ Copyright (c) 2015 Peter Svedberg.
     
     <paper-card id="createDialog" class="hide" elevation="2" heading="Create">
       <div class="card-content">
-        <paper-input id="name" on-keyup="_createOnEnter" autofocus="true"></paper-input>
+        <paper-input id="name" on-keyup="_createOnEnter" autofocus></paper-input>
         <template is="dom-if" if="{{isActionable}}"></template>
         <template is="dom-if" if="{{!isActionable}}"></template>
       </div>

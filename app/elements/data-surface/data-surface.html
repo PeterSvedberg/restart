@@ -70,6 +70,12 @@ Copyright (c) 2015 Peter Svedberg.
         addEventListener('container-name-change-action', e => {
           this.changeContainerName(e.detail);
         });
+        addEventListener('container-link-change-action', e => {
+          this.changeContainerLink(e.detail);
+        });
+        addEventListener('actionable-text-change-action', e => {
+          this.changeActionableText(e.detail);
+        });
         addEventListener('delete-actionable-action', e => {
           this.deleteActionable(e.detail.id);
         });
@@ -143,7 +149,7 @@ Copyright (c) 2015 Peter Svedberg.
         window.location.hash = `!${a.id}`;
         this.fire('navigation-event', {'bubbles': false});
         // Hook for backend?
-        this.fire('createdActionable', {'actionable': a, 'bubbles': false});
+        this.fire('createdActionable', {'actionable': a});
       }
         
       createContainer(actionableId, name) {
@@ -151,23 +157,32 @@ Copyright (c) 2015 Peter Svedberg.
           console.log('Actionable id mismatch on add container action');
           return;
         }
+        this.set('selectedActionable.timestamp', Date.now());
         let c = new Container(this._getId(), name);
         this.set('selectedActionable.lastContainer', c);
         this.unshift('selectedActionable.containers', c);
         // Hook for backend?
-        this.fire('addedContainer', {'container': c, 'bubbles': false});
+        this.fire('addedContainer', {'container': c});
       }
         
       changeActionableName(actionable) {
-        this.selectedActionable.timestamp = Date.now();
         // Hook for backend?
-        this.fire('changedActionableName', {'actionable': actionable, 'bubbles': false});
+        this.fire('changedActionableName', {'actionable': actionable});
       }
         
       changeContainerName(handle) {
-        this.selectedActionable.timestamp = Date.now();
         // Hook for backend?
-        this.fire('changedContainerName', {'actionableId': handle.actionableId, 'container': handle.container, 'bubbles': false});
+        this.fire('changedContainerName', {'actionable': handle.actionable, 'newContainer': handle.newContainer});
+      }
+        
+      changeContainerLink(handle) {
+        // Hook for backend?
+        this.fire('changedContainerLink', {'actionable': handle.actionable, 'newContainer': handle.newContainer});
+      }
+        
+      changeActionableText(handle) {
+        // Hook for backend?
+        this.fire('changedActionableText', {'actionable': handle.actionable});
       }
         
       deleteActionable(id) {
@@ -177,7 +192,7 @@ Copyright (c) 2015 Peter Svedberg.
           window.history.back();
           this.fire('navigation-event', {'bubbles': false});
           // Hook for backend?
-          this.fire('deletedActionable', {'id': id, 'bubbles': false});
+          this.fire('deletedActionable', {'actionable': this.selectedActionable});
         } else {
           console.log('deleteActionable, id mismatch! id:' + id + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
         }
@@ -187,7 +202,7 @@ Copyright (c) 2015 Peter Svedberg.
         if (actionableId === this.selectedActionable.id) {
           this.arrayDelete('selectedActionable.containers', container);
           // Hook for backend?
-          this.fire('deletedContainer', {'actionableId': actionableId, 'container': container, 'bubbles': false});
+          this.fire('deletedContainer', {'actionableId': actionableId, 'container': container});
         } else {
           console.log('deleteContainer, id mismatch! actionableId:' + actionableId + 'this.selectedActionable.id:' + this.selectedActionable.id + '!');
         }

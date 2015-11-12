@@ -6,12 +6,15 @@ Copyright (c) 2015 Peter Svedberg.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 <link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
-<link rel="import" href="../one-line-text-editor/one-line-text-editor.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
 <dom-module id="actionable-view">
   <template>
@@ -29,6 +32,15 @@ Copyright (c) 2015 Peter Svedberg.
         }
         --paper-input-container-invalid-color: var(--accent-color);
         --paper-input-container-focus-color: var(--primary-color);
+        --paper-dialog: {
+          min-width: 300px;
+        }
+        --paper-dialog-color: var(--inverse-text-color);
+        --paper-dialog-title: {
+          background-color: var(--primary-color);
+          height: 64px;
+          line-height: 64px;
+        }
       }
 
       paper-scroll-header-panel {
@@ -108,6 +120,9 @@ Copyright (c) 2015 Peter Svedberg.
 
       .container-name {
         font-size: 14px;
+        color: var(--primary-text-color);
+        text-decoration: none;
+        cursor: auto;
       }
       
       .spreader {
@@ -118,18 +133,27 @@ Copyright (c) 2015 Peter Svedberg.
         font-weight: normal;
       }
 
-      .delete {
-        margin: 12px 8px 0 0;
+      .icon-button {
+        margin: 12px 8px 0 16px;
         color: var(--dark-primary-color);
         display: none;
       }
       
-      .item.active .delete {
+      .item.active .icon-button {
         display: inline;
       }
 
-      .item.active .delete:hover {
+      .item.active .icon-button:hover {
         color: var(--accent-color);
+      }
+      
+      paper-dialog > *:first-child {
+        margin-top: 0;
+      }
+      
+      .actions {
+        color: var(--button-primary-color);
+        display: flex;
       }
       
     </style>
@@ -147,23 +171,39 @@ Copyright (c) 2015 Peter Svedberg.
                      on-keyup="_createContainerOnEnter">
         </paper-input>
       </paper-toolbar>
-      <div class="panel">
+      <div id="panel" class="panel">
         <template is="dom-if" if="{{showText}}">
-          <iron-autogrow-textarea id="actionableText" bind-value="{{actionable.text}}" autofocus></iron-autogrow-textarea>
+          <iron-autogrow-textarea id="actionableText" on-blur="_onActionableTextEdit" bind-value="{{actionable.text}}" autofocus></iron-autogrow-textarea>
         </template>
         <template id="containerList" is="dom-repeat" as="container"
                   items="{{actionable.containers}}">
           <div>
             <div id$="[[container.id]]" class="item">
-              <label class="container-name" on-tap="_editContainerName">{{container.title}}</label>
+              <template is="dom-if" if="{{container.link}}">
+                <a class="container-name" target="_blank" href$="{{_computeLink(container.link)}}">{{container.title}}</a>
+              </template>
+              <template is="dom-if" if="{{!container.link}}">
+                <label class="container-name" on-tap="_toggleContainerSelection">{{container.title}}</label>
+              </template>
               <span class="spreader" on-tap="_toggleContainerSelection"></span>
-              <iron-icon icon="remove" class="delete" on-tap="_onDelete"></iron-icon>
+              <iron-icon icon="create" class="icon-button" on-tap="_onEditAction"></iron-icon>
+              <iron-icon icon="remove" class="icon-button" on-tap="_onDelete"></iron-icon>
             </div>
           </div>
         </template>
         <array-selector id="selector" items="{{actionable.containers}}"
                         selected="{{selectedContainer}}" toggle>
         </array-selector>
+        <paper-dialog id="containerEdit" auto-fit-on-attach exit-animation="fade-out-animation">
+          <h2>Edit title or link</h2>
+          <paper-input label="title" on-keyup="_onContainerEditKeyup" value="{{selectedContainer.title}}"></paper-input>
+          <paper-input label="link" on-keyup="_onContainerEditKeyup" value="{{selectedContainer.link}}"></paper-input>
+          <div class="actions">
+            <span class="spreader"></span>
+            <paper-icon-button icon="close" on-tap="_onContainerEditCancel"></paper-icon-button>
+            <paper-icon-button icon="done" on-tap="_onContainerEdit"></paper-icon-button>
+          </div>
+        </paper-dialog>
       </div>
     </paper-scroll-header-panel>
 
@@ -199,28 +239,22 @@ Copyright (c) 2015 Peter Svedberg.
             showText: {
               type: Boolean,
               value: false
+            },
+            
+            lastText: {
+              type: String,
+              value: ''
             }
             
           };
           
           this.observers = [
-            '_lastContainerChanged(actionable.lastContainer)'
+            '_lastContainerChanged(actionable.lastContainer)',
           ];
         }
         
         attached() {
           console.log('actionable-view attached');
-          addEventListener('one-line-text-editor-on-close', e => {
-            if (e.detail.actionableId !== this.actionable.id) {
-              console.log('lost edit');
-              return;
-            } else if (e.detail.containerId === this.selectedContainer.id) {
-              this.set('selectedContainer.title', e.detail.value.trim());
-              this.fire('container-name-change-action',  {'actionableId': this.actionable.id, 'container': this.selectedContainer});
-            } else {
-              console.log('If this happens a lot, we need to put a remedy here.');
-            }
-          });
           // hack to set off an actionable load
           var tmp = window.location.hash;
           window.location.hash = '';
@@ -235,6 +269,55 @@ Copyright (c) 2015 Peter Svedberg.
 
         _lastContainerChanged(container) {
           this._doToggleContainerSelection(container);
+        }
+        
+        _onContainerEditKeyup(e) {
+          if (e.keyCode === 13) {
+            this._onContainerEdit();
+          }
+        }
+        
+        _onActionableTextEdit() {
+          this.set('actionable.timestamp', Date.now());
+          this.fire('actionable-text-change-action', {'actionable': this.actionable});
+        }
+        
+        _onContainerEditCancel() {
+          this.$.containerEdit.close();
+          console.log('TODO reset any changes');
+        }
+        
+        _onContainerEdit() {
+          this.$.containerEdit.close();
+          if (this.lastSelected.title !== this.selectedContainer.title) {
+            this.set('actionable.timestamp', Date.now());
+            this.fire('container-name-change-action', {'actionable': this.actionable,
+              'oldContainer': this.lastSelected, 'newContainer': this.selectedContainer});
+          }
+          if (this.lastSelected.link !== this.selectedContainer.link) {
+            this.set('actionable.timestamp', Date.now());
+            this._trimLink();
+            this.fire('container-link-change-action', {'actionable': this.actionable,
+              'oldContainer': this.lastSelected, 'newContainer': this.selectedContainer});
+          }
+        }
+        
+        _trimLink() {
+          var link = this.selectedContainer.link;
+          var https = 'https://';
+          var http = 'http://';
+          var www = 'www';
+          if (link.startsWith(https)) {
+            link = link.substring(https.length);
+          } else if (link.startsWith(http)) {
+            link = link.substring(http.length);
+          }
+          if (link.startsWith(www)) {
+            link = link.substring(www.length);
+          }
+          if (link !== this.selectedContainer.link) {
+            this.set('selectedContainer.link', link);
+          }
         }
         
         _toggleShowText() {
@@ -254,7 +337,8 @@ Copyright (c) 2015 Peter Svedberg.
             this.$.selector.select(container);
           }
           if (this.selectedContainer && this.selectedContainer.id) {
-            this.lastSelected = this.selectedContainer;
+            // put a copy of selectedContainer in lastSelected
+            this.lastSelected = JSON.parse(JSON.stringify(this.selectedContainer));
             this.async(() => {
               this._activateSelected();
             });
@@ -275,36 +359,26 @@ Copyright (c) 2015 Peter Svedberg.
           }
         }
         
+        _onEditAction() {
+          this.$.containerEdit.open();
+        }
+        
+        _computeLink(link) {
+          return 'https://www.' + link;
+        }
+        
         _onDelete(e) {
           e.stopPropagation();
+          this.set('actionable.timestamp', Date.now());
           this.fire('delete-container-action', {'actionableId': this.actionable.id, 'container': this.selectedContainer});
         }
 
         _editName() {
           if (this.$.name && this.$.name.validate()) {
             this.set('actionable.title', this.$.name.value);
+            this.set('actionable.timestamp', Date.now());
             this.fire('actionable-name-change-action', {'actionable': this.actionable});
           }
-        }
-
-        _editContainerName(e) {
-          this.pendingElement = this.$.containerList.itemForElement(e.target);
-          if (this.pendingElement && this.pendingElement.id) {
-            if (this.selectedContainer && this.selectedContainer.id && this.pendingElement.id === this.selectedContainer.id) {
-              this._doEditContainerName(this.pendingElement);
-            } else {
-              this._doToggleContainerSelection(this.pendingElement);
-              this.pendingElement = null;
-            }
-          }
-        }
-
-        _doEditContainerName() {
-          var textEditor = document.createElement('one-line-text-editor');
-          textEditor.setValue(this.selectedContainer.title);
-          textEditor.setActionableId(this.actionable.id);
-          textEditor.setContainerId(this.selectedContainer.id);
-          document.getElementById(this.selectedContainer.id).appendChild(textEditor);
         }
 
         _createContainer() {
