@@ -3,8 +3,8 @@
 The MIT License applies unless otherwise noted. See LICENSE.md for details.
 Copyright (c) 2015 Peter Svedberg.
 -->
-<link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="data-surface">
   <template>
@@ -24,7 +24,6 @@ Copyright (c) 2015 Peter Svedberg.
       this.title = title;
       this.text = '';
       this.containers = [];
-      this.lastContainer = {};
     }
   }
     
@@ -59,7 +58,7 @@ Copyright (c) 2015 Peter Svedberg.
       
       attached() {
         addEventListener('create-actionable-action', e => {
-          this.createActionable(e.detail.value);
+          this.createActionable(e.detail.title);
         });
         addEventListener('add-container-action', e => {
           this.createContainer(e.detail.actionableId, e.detail.name);
@@ -117,22 +116,19 @@ Copyright (c) 2015 Peter Svedberg.
             'timestamp': 1446119424988,
             'title': 'Daily',
             'text': '',
-            'containers': [],
-            'lastContainer': {}
+            'containers': []
            }, {
             'id': 'Two',
             'timestamp': 1446119424988,
             'title': 'News',
             'text': '',
-            'containers': [],
-            'lastContainer': {}
+            'containers': []
            }, {
             'id': 'Three',
             'timestamp': 1446119424988,
             'title': 'Weather',
             'text': '',
-            'containers': [],
-            'lastContainer': {}
+            'containers': []
           }];
           this.set('actionables', initial);
       }
@@ -159,7 +155,6 @@ Copyright (c) 2015 Peter Svedberg.
         }
         this.set('selectedActionable.timestamp', Date.now());
         let c = new Container(this._getId(), name);
-        this.set('selectedActionable.lastContainer', c);
         this.unshift('selectedActionable.containers', c);
         // Hook for backend?
         this.fire('addedContainer', {'container': c});

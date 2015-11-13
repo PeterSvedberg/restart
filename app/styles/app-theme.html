@@ -40,6 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       width: 0;
       /*transition: width 0.3s ease-in-out 0.02s;        */
     }
+    
     --medium-navigation: {
       height: 100%;
       max-width: 320px;
@@ -48,6 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       opacity: 1;
       /*transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;*/
     }
+    
     --standard-navigation: {
       height: 100%;
       max-width: 320px;
@@ -56,6 +58,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       opacity: 1;
       /*transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;*/
     }
+    
     --large-navigation: {
       height: 100%;
       max-width: 400px;
@@ -64,34 +67,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       opacity: 1;
       /*transition: width 0.3s, margin-left 0.3s ease-in-out 0.02s;        */
     }
+    
     --small-navigation-toggle: {
       width: 100%;
     }
+    
     --standard-navigation-toggle: {
       width: 0;
       margin-left: 0;
       opacity: 0;
     }
+    
     --large-navigation-toggle: {
       width: 0;
       margin-left: 0;
       opacity: 0;
     }
+    
     --medium-actionable: {
       @apply(--layout-flex);
       height: 100%;
       margin: 0px 16px 0 16px;
     }
+    
     --standard-actionable: {
       @apply(--layout-flex);
       height: 100%;
       margin: 0px 24px 0 24px;
     }
+    
     --large-actionable: {
       @apply(--layout-flex);
       height: 100%;
       margin: 0px 40px 0 40px;
     }
+    
     --medium-more-actions: {
       height: 100%;
       max-width: 320px;
@@ -100,6 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       opacity: 0;
       /*transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        */
     }
+    
     --standard-more-actions: {
       height: 100%;
       max-width: 320px;
@@ -108,6 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       opacity: 0;
       /*transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        */
     }
+    
     --large-more-actions: {
       height: 100%;
       max-width: 400px;
@@ -116,15 +128,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       opacity: 1;
       /*transition: width 0.3s, margin-right 0.3s ease-in-out 0.02s;        */
     }
+    
     --standard-more-actions-toggle: {
       width: 33%;
       margin-right: 24px;
       opacity: 1;
     }
+    
     --large-more-actions-toggle: {
       width: 0;
       margin-right: 0;
       opacity: 0;
     }
+    
+    /* Components */
+    /* Paper Scroll Header Panel */
+    paper-scroll-header-panel {
+      @apply(--layout-flex);     
+    }
+
+    /* Paper Icon Button */
+    --paper-icon-button: {
+      color: var(--button-primary-color);
+    }
+    
+    /* Paper Dialog */
+    --paper-dialog: {
+      min-width: 300px;
+    }
+    
+    --paper-dialog-color: var(--inverse-text-color);
+    
+    --paper-dialog-title: {
+      background-color: var(--primary-color);
+      height: 64px;
+      line-height: 64px;
+    }
+    
+    /* Paper Input Container */
+    --paper-input-container-underline-focus: {
+      height: 1px;
+    }
+    
+    --paper-input-container-invalid-color: var(--accent-color);
+    
+    --paper-input-container-focus-color: var(--primary-color);
   }
 </style>

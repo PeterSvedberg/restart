@@ -4,17 +4,16 @@
 The MIT License applies unless otherwise noted. See LICENSE.md for details.
 Copyright (c) 2015 Peter Svedberg.
 -->
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
-<link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="actionable-view">
   <template>
@@ -27,28 +26,6 @@ Copyright (c) 2015 Peter Svedberg.
           border-bottom: 1px solid var(--light-divider-color);
           padding: 0;
         }
-        --paper-input-container-underline-focus: {
-          height: 1px;
-        }
-        --paper-input-container-invalid-color: var(--accent-color);
-        --paper-input-container-focus-color: var(--primary-color);
-        --paper-dialog: {
-          min-width: 300px;
-        }
-        --paper-dialog-color: var(--inverse-text-color);
-        --paper-dialog-title: {
-          background-color: var(--primary-color);
-          height: 64px;
-          line-height: 64px;
-        }
-      }
-
-      paper-scroll-header-panel {
-        @apply(--layout-flex);     
-      }
-
-      paper-icon-button {
-        color: var(--button-secondary-color);
       }
 
       .main-toolbar {
@@ -61,7 +38,7 @@ Copyright (c) 2015 Peter Svedberg.
         display: none;
       }
 
-      #name {
+      #title {
         --paper-input-container-input-color: var(--dark-primary-color);
         --paper-input-container-color: var(--primary-background-color);
         --paper-input-container-input: {
@@ -119,7 +96,7 @@ Copyright (c) 2015 Peter Svedberg.
       }
 
       .container-name {
-        font-size: 14px;
+        font-size: 16px;
         color: var(--primary-text-color);
         text-decoration: none;
         cursor: auto;
@@ -151,17 +128,16 @@ Copyright (c) 2015 Peter Svedberg.
         margin-top: 0;
       }
       
-      .actions {
-        color: var(--button-primary-color);
-        display: flex;
+      paper-dialog > .buttons {
+        padding: 16px 16px 16px 0;
       }
-      
+    
     </style>
 
     <paper-scroll-header-panel id="scrollHeaderPanel" scroll-away-topbar condenses>
       <paper-toolbar id="toolbar" class="main-toolbar">
-        <paper-input id="name" value="{{actionable.title}}" on-blur="_editName" required
-                     error-message="A name is required"></paper-input>
+        <paper-input id="title" value="{{actionable.title}}" on-blur="_editName" required
+                     error-message="A title is required"></paper-input>
         <span class="flex"></span>
         <template is="dom-if" if="{{!showText}}">
           <paper-icon-button icon="add" on-tap="_toggleShowText"></paper-icon-button>
@@ -173,7 +149,7 @@ Copyright (c) 2015 Peter Svedberg.
       </paper-toolbar>
       <div id="panel" class="panel">
         <template is="dom-if" if="{{showText}}">
-          <iron-autogrow-textarea id="actionableText" on-blur="_onActionableTextEdit" bind-value="{{actionable.text}}" autofocus></iron-autogrow-textarea>
+          <iron-autogrow-textarea id="actionableText" on-blur="_onActionableTextEdit" bind-value="{{actionable.text}}"></iron-autogrow-textarea>
         </template>
         <template id="containerList" is="dom-repeat" as="container"
                   items="{{actionable.containers}}">
@@ -198,8 +174,7 @@ Copyright (c) 2015 Peter Svedberg.
           <h2>Edit title or link</h2>
           <paper-input label="title" on-keyup="_onContainerEditKeyup" value="{{selectedContainer.title}}"></paper-input>
           <paper-input label="link" on-keyup="_onContainerEditKeyup" value="{{selectedContainer.link}}"></paper-input>
-          <div class="actions">
-            <span class="spreader"></span>
+          <div class="buttons">
             <paper-icon-button icon="close" on-tap="_onContainerEditCancel"></paper-icon-button>
             <paper-icon-button icon="done" on-tap="_onContainerEdit"></paper-icon-button>
           </div>
@@ -238,23 +213,19 @@ Copyright (c) 2015 Peter Svedberg.
             
             showText: {
               type: Boolean,
-              value: false
+              value: false,
+              notify: true
             },
             
             lastText: {
               type: String,
               value: ''
-            }
+            },
             
           };
-          
-          this.observers = [
-            '_lastContainerChanged(actionable.lastContainer)',
-          ];
         }
         
         attached() {
-          console.log('actionable-view attached');
           // hack to set off an actionable load
           var tmp = window.location.hash;
           window.location.hash = '';
@@ -262,13 +233,21 @@ Copyright (c) 2015 Peter Svedberg.
         }
         
         _onActionableChange() {
+          this._deactivateLastSelected();
+          this.lastSelected = {};
+          this.lastText = '';
+          this.selectedContainer = {};
           this.showText = this.actionable && this.actionable.text && this.actionable.text.length > 0;
           var showToolbar = this.actionable && this.actionable.id;
           this.querySelector('#toolbar').toggleClass('hide', !showToolbar);
         }
 
-        _lastContainerChanged(container) {
-          this._doToggleContainerSelection(container);
+        _onActionableTextEdit() {
+          if (this.actionable.text.length === 0) {
+            this.showText = false;
+          }
+          this.set('actionable.timestamp', Date.now());
+          this.fire('actionable-text-change-action', {'actionable': this.actionable});
         }
         
         _onContainerEditKeyup(e) {
@@ -277,14 +256,15 @@ Copyright (c) 2015 Peter Svedberg.
           }
         }
         
-        _onActionableTextEdit() {
-          this.set('actionable.timestamp', Date.now());
-          this.fire('actionable-text-change-action', {'actionable': this.actionable});
-        }
-        
         _onContainerEditCancel() {
           this.$.containerEdit.close();
-          console.log('TODO reset any changes');
+          // reset any changes
+          if (this.lastSelected.title !== this.selectedContainer.title) {
+            this.set('selectedContainer.title', this.lastSelected.title);
+          }
+          if (this.lastSelected.link !== this.selectedContainer.link) {
+            this.set('selectedContainer.link', this.lastSelected.link);
+          }
         }
         
         _onContainerEdit() {
@@ -346,6 +326,9 @@ Copyright (c) 2015 Peter Svedberg.
         }
 
         _deactivateLastSelected() {
+          if (!this.lastSelected) {
+            return;
+          }
           var node = document.getElementById(this.lastSelected.id);
           if (node && node.classList) {
             node.classList.remove('active');
@@ -374,8 +357,8 @@ Copyright (c) 2015 Peter Svedberg.
         }
 
         _editName() {
-          if (this.$.name && this.$.name.validate()) {
-            this.set('actionable.title', this.$.name.value);
+          if (this.$.title && this.$.title.validate()) {
+            this.set('actionable.title', this.$.title.value);
             this.set('actionable.timestamp', Date.now());
             this.fire('actionable-name-change-action', {'actionable': this.actionable});
           }

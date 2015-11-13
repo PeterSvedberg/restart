@@ -3,14 +3,18 @@
 The MIT License applies unless otherwise noted. See LICENSE.md for details.
 Copyright (c) 2015 Peter Svedberg.
 -->
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../layout-state/layout-state.html">
-<link rel="import" href="../data-surface/data-surface.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../actionables-list/actionables-list.html">
 <link rel="import" href="../actionable-view/actionable-view.html">
 <link rel="import" href="../app-actions-panel/app-actions-panel.html">
-<link rel="import" href="../actionables-list/actionables-list.html">
+<link rel="import" href="../data-surface/data-surface.html">
+<link rel="import" href="../layout-state/layout-state.html">
 
 <dom-module id="app-view">
   <template>
@@ -74,6 +78,14 @@ Copyright (c) 2015 Peter Svedberg.
 
       .fab {
         background-color: var(--accent-color);
+      }
+      
+      paper-dialog > *:first-child {
+        margin-top: 0;
+      }
+      
+      paper-dialog > .buttons {
+        padding: 16px 16px 16px 0;
       }
       
       /* s */
@@ -545,10 +557,9 @@ Copyright (c) 2015 Peter Svedberg.
         #moreActions.toggle-more-actions {
           @apply(--standard-more-actions-toggle);        
         }     
-      }
-      
+      } 
     </style>
-    
+
     <layout-state id="ls" media="{{media}}"></layout-state>
     <data-surface id="ds" actionables="{{actionables}}" selected-actionable="{{selectedActionable}}"></data-surface>
     <div class="view">
@@ -574,6 +585,15 @@ Copyright (c) 2015 Peter Svedberg.
         </div>
       </div>
     </div>
+    <paper-dialog id="createActionable" auto-fit-on-attach exit-animation="fade-out-animation">
+      <h2>Create List</h2>
+      <paper-input id="title" label="title" on-keyup="_onActionableCreateKeyup"
+        value="{{title}}" autofocus required error-message="A title is required"></paper-input>
+      <div class="buttons">
+        <paper-icon-button icon="close" on-tap="_onActionableCreateCancel"></paper-icon-button>
+        <paper-icon-button icon="done" on-tap="_onActionableCreate"></paper-icon-button>
+      </div>
+    </paper-dialog>
   </template>
 
   <script>
@@ -597,9 +617,11 @@ Copyright (c) 2015 Peter Svedberg.
               value: () => {},
               observer: '_selectedActionableChanged'
             },
-                        
-            isCreateDialogImported: false
-
+            
+            title: {
+              type: String,
+              value: ''
+            }
           };         
         }
         
@@ -632,32 +654,26 @@ Copyright (c) 2015 Peter Svedberg.
           this.$.ls.toggleMoreActions(this.$.navigation, this.$.moreActions);
         }
         
-        _createActionable() {
-          if (this.isCreateDialogImported) {
-            this._doCreateActionable();
-          } else {
-            this._importCreateDialogAndContinue();
+        _onActionableCreateKeyup(e) {
+          if (e.keyCode === 13) {
+            this._onActionableCreate();
           }
         }
         
-        _doCreateActionable() {
-          var createDialog = document.createElement('create-dialog');
-          createDialog.setHeading('New List');
-          createDialog.setPlaceholder('Name of list (required)');
-          createDialog.setEvent('create-actionable-action');
-          createDialog.setRequired(true);
-          createDialog.setErrorMessage('A name is required');          
-          Polymer.dom(this.$.main).appendChild(createDialog);
+        _onActionableCreateCancel() {
+          this.$.createActionable.close();
         }
         
-        _importCreateDialogAndContinue() {
-            /* jshint unused: false */
-            this.importHref('elements/create-dialog/create-dialog.html', e => {
-              this.isCreateDialogImported = true;
-              this._doCreateActionable();             
-            }, e => {
-              console.log('failed to import create-dialog ' + e);
-            });
+        _onActionableCreate() {
+          if (this.$.title.validate()) {
+            this.$.createActionable.close();
+            this.fire('create-actionable-action', {'title': this.title});
+          }
+        }
+        
+        _createActionable() {
+          this.title = '';
+          this.$.createActionable.open();
         }        
       }
       
@@ -665,5 +681,4 @@ Copyright (c) 2015 Peter Svedberg.
       
     })();
   </script>
-
 </dom-module>

@@ -3,12 +3,12 @@
 The MIT License applies unless otherwise noted. See LICENSE.md for details.
 Copyright (c) 2015 Peter Svedberg.
 -->
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="actionables-list">
   <template>
@@ -17,19 +17,8 @@ Copyright (c) 2015 Peter Svedberg.
         @apply(--layout-vertical);
         height: 100%;
         background-color: var(--primary-background-color);
-        --iron-list-items-container: {
-          /* styles the container for the items*/
-        };
       }
       
-      paper-scroll-header-panel {
-        @apply(--layout-flex);
-      }
-      
-      paper-icon-button {
-        color: var(--button-secondary-color);
-      }
-        
       .actionables-toolbar {
         background-color: var(--primary-background-color);
         border-bottom: 1px solid var(--divider-color);
@@ -117,8 +106,7 @@ Copyright (c) 2015 Peter Svedberg.
             actionables: {
               type: Array,
               value: () => [],
-              notify: true,
-              observer: '_actionablesChanged'
+              notify: true
             },
     
             selectedActionable: {
@@ -133,15 +121,10 @@ Copyright (c) 2015 Peter Svedberg.
             },
             
             navigationInProgress: false
-          };
-          
-          this.observers = [
-              '_actionablesAddedOrRemoved(actionables.splices)'
-          ];
+          };         
         }
         
         attached() {
-          console.log('actionables-list attached');
           addEventListener('hashchange', () => {
             // we want to bypass a window.location.hash set in
             // _selectedActionableChanged()
@@ -160,18 +143,9 @@ Copyright (c) 2015 Peter Svedberg.
           });
         }
         
-        _actionablesAddedOrRemoved(/* jshint unused: false */changeRecord) {
-          console.log('_actionablesAddedOrRemoved');
-        }
-        
-        _actionablesChanged() {
-          console.log('_actionablesChanged');
-        }
-        
         /*the logic here exist only to set window.location.hash when the selection
           originates from the list*/
         _selectedActionableChanged() {
-          //console.log('_selectedActionableChanged ' + this.selectedActionable);
           // only selection in the list starts with a deselect
           if (this.selectedActionable === null) {
             // use it as signal
