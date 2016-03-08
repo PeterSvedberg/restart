@@ -3,8 +3,8 @@
 The MIT License applies unless otherwise noted. See LICENSE.md for details.
 Copyright (c) 2015 Peter Svedberg.
 -->
-<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
 
 <dom-module id="data-surface">
   <template>
@@ -14,9 +14,10 @@ Copyright (c) 2015 Peter Svedberg.
   </template>
 
 <script src="../../scripts/dataSurface.js"></script>
+
 <script>
   'use strict';
-
+  
   class Actionable {
     constructor(id, title) {
       this.id = id;
@@ -106,10 +107,6 @@ Copyright (c) 2015 Peter Svedberg.
         return id;
       }
       
-      getActionables() {
-        return this.actionables;
-      }
-      
       _initialDefaultActionables() {
           var initial = [{
             'id': 'One',
@@ -145,6 +142,7 @@ Copyright (c) 2015 Peter Svedberg.
         window.location.hash = `!${a.id}`;
         this.fire('navigation-event', {'bubbles': false});
         // Hook for backend?
+        console.log('createdActionable');
         this.fire('createdActionable', {'actionable': a});
       }
         

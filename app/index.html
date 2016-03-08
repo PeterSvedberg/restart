@@ -67,7 +67,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <div id="splash"></div>
   <div id="container"></div>
   <!-- App loading is handled by app.js -->
-  <script src="scripts/app.js" async></script>
+  <script src="system.js"></script>
+  <script>
+    // loads relative to the current page URL
+    System.import('./scripts/app.js'); 
+  </script>
+ <!-- <script src="scripts/app.js" async></script>-->
 </body>
 
 </html>

@@ -19,11 +19,12 @@ var reload = browserSync.reload;
 var merge = require('merge-stream');
 var path = require('path');
 var fs = require('fs');
-var glob = require('glob');
+var glob = require('glob-all');
 var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
-var polybuild = require('polybuild');
+//var polybuild = require('polybuild');
+var ensureFiles = require('./tasks/ensure-files.js');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -37,6 +38,12 @@ var AUTOPREFIXER_BROWSERS = [
   'bb >= 10'
 ];
 
+var DIST = 'dist';
+
+var dist = function(subpath) {
+  return !subpath ? DIST : path.join(DIST, subpath);
+};
+
 var styleTask = function (stylesPath, srcs) {
   return gulp.src(srcs.map(function(src) {
       return path.join('app', stylesPath, src);
@@ -44,7 +51,7 @@ var styleTask = function (stylesPath, srcs) {
     .pipe($.changed(stylesPath, {extension: '.css'}))
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
     .pipe(gulp.dest('.tmp/' + stylesPath))
-    .pipe($.cssmin())
+    .pipe($.minifyCss())
     .pipe(gulp.dest('dist/' + stylesPath))
     .pipe($.size({title: stylesPath}));
 };
@@ -78,7 +85,7 @@ var optimizeHtmlTask = function (src, dest) {
     .pipe($.if('*.js', $.uglify({preserveComments: 'some'})))
     // Concatenate and minify styles
     // In case you are still using useref build blocks
-    .pipe($.if('*.css', $.cssmin()))
+    .pipe($.if('*.css', $.minifyCss()))
     .pipe(assets.restore())
     .pipe($.useref())
     // Minify any HTML
@@ -95,6 +102,17 @@ var optimizeHtmlTask = function (src, dest) {
 // Compile and automatically prefix stylesheets
 gulp.task('styles', function () {
   return styleTask('styles', ['**/*.css']);
+});
+
+// Ensure that we are not missing required files for the project
+// "dot" files are specifically tricky due to them being hidden on
+// some systems.
+gulp.task('ensureFiles', function(cb) {
+  var requiredFiles = ['.bowerrc'];
+
+  ensureFiles(requiredFiles.map(function(p) {
+    return path.join(__dirname, p);
+  }), cb);
 });
 
 gulp.task('elements', function () {
@@ -181,9 +199,16 @@ gulp.task('html', function () {
 // Polybuild will take care of inlining HTML imports,
 // scripts and CSS for you.
 gulp.task('vulcanize', function () {
-  return gulp.src('dist/index.html')
-    .pipe(polybuild({maximumCrush: true}))
-    .pipe(gulp.dest('dist/'));
+  return gulp.src('app/elements/elements.html')
+    .pipe($.vulcanize({
+      stripComments: true,
+      inlineCss: true,
+      inlineScripts: true
+    }))
+    .pipe(gulp.dest(dist('elements')))
+    .pipe($.size({title: 'vulcanize'}));
+    //.pipe(polybuild({maximumCrush: true}))
+    //.pipe(gulp.dest('dist/'));
 });
 
 // If you require more granular configuration of Vulcanize
@@ -230,8 +255,8 @@ gulp.task('cache-config', function (callback) {
 });
 
 // Clean output directory
-gulp.task('clean', function (cb) {
-  del(['.tmp', 'dist'], cb);
+gulp.task('clean', function() {
+  return del(['.tmp', dist()]);
 });
 
 // Watch files for changes & reload
@@ -295,7 +320,7 @@ gulp.task('serve:dist', ['default'], function () {
 gulp.task('default', ['clean'], function (cb) {
   // Uncomment 'cache-config' after 'rename-index' if you are going to use service workers.
   runSequence(
-    ['copy', 'styles'],
+    ['ensureFiles', 'copy', 'styles'],
     ['elements', 'js'],
     ['jshint', 'images', 'fonts', 'html'],
     'vulcanize','rename-index','cache-config',

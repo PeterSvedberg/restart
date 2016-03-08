@@ -4,21 +4,22 @@ Copyright (c) 2015 Peter Svedberg.
 */
  'use strict';
 
-  var ds;
-  let ready = false;
+  var store = require('./store'),
+    actions = require('./actions'),
+    Immutable = require('immutable');
 
-  let isReady = () => {
-    if (!ready) {
-      ds = document.querySelector('#ds');
-      ready = !(ds === null || ds === undefined);
-    }
-    return ready;
-  };
+  setTimeout(function(){
+      store.dispatch( actions.startListeningToAuth() );
+  });
 
   /* exported dsr */
   let dsr = window.addEventListener('dataSurfaceReady', () => {
     window.addEventListener('createdActionable', e => {
       console.log('createdActionable ' + e.detail.actionable.title);
+      var map1 = Immutable.Map({a:1, b:2, c:3});
+      var map2 = map1.set('b', 50);
+      console.log('map1:b (2)' + map1.get('b'));
+      console.log('map2:b (50)' + map2.get('b'));
     });
     window.addEventListener('addedContainer', e => {
       console.log('addedContainer ' + e.detail.container.title);
@@ -42,12 +43,3 @@ Copyright (c) 2015 Peter Svedberg.
       console.log('deletedContainer ' + e.detail.container.id + ' in actionable' + e.detail.actionableId);
     });
   });
-
-  /* exported getActionables */
-  let getActionables = () => {
-    if (isReady()) {
-      console.log(ds.getActionables());
-    } else {
-      console.warn('Data surface is not ready!');
-    }
-  };

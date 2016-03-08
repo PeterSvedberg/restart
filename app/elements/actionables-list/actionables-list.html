@@ -3,12 +3,14 @@
 The MIT License applies unless otherwise noted. See LICENSE.md for details.
 Copyright (c) 2015 Peter Svedberg.
 -->
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../bower_components/iron-list/iron-list.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
 
 <dom-module id="actionables-list">
   <template>
@@ -17,6 +19,14 @@ Copyright (c) 2015 Peter Svedberg.
         @apply(--layout-vertical);
         height: 100%;
         background-color: var(--primary-background-color);
+      }
+      
+      paper-scroll-header-panel {
+        height: 100%;
+      }
+      
+      iron-list {
+        height: 100%;
       }
       
       .actionables-toolbar {
