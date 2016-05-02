@@ -9,16 +9,12 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html lang="">
-
 <head>
   <meta charset="utf-8">
   <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <meta name="generator" content="Polymer Starter Kit" />
   <title>operat.nl</title>
-  
-  <!-- Chrome for Android theme color -->
-  <meta name="theme-color" content="#00796b">
   
   <!-- Web Application Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -28,6 +24,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="application-name" content="operat.nl">
   <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
 
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="operat.nl">
+  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#00796b">
+  
   <!-- Tile color for Win8 -->
   <meta name="msapplication-TileColor" content="#00796b">
   
@@ -36,13 +41,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="application-name" content="operat.nl">
   <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+  <link rel="import" id="bundle" href="elements/elements.html" async>
   
-  <!-- Add to homescreen for Safari on iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="operat.nl">
-  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
-
   <style>
     body.loading #splash {
       opacity: 1;
@@ -62,17 +62,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
 </head>
 
-<body class="loading"> 
+<body class="loading">
   <span id="browser-sync-binding"></span>
+    
   <div id="splash"></div>
-  <div id="container"></div>
-  <!-- App loading is handled by app.js -->
-  <script src="system.js"></script>
-  <script>
-    // loads relative to the current page URL
-    System.import('./scripts/app.js'); 
-  </script>
- <!-- <script src="scripts/app.js" async></script>-->
+  
+  <app-view id="app" class="flex"></app-view>
+  
+  <paper-toast id="caching-complete"
+               duration="6000"
+               text="Caching complete! This app will work offline.">
+  </paper-toast>
+  
+  <platinum-sw-register auto-register
+                        clients-claim
+                        skip-waiting
+                        on-service-worker-installed="displayInstalledToast">
+    <platinum-sw-cache default-cache-strategy="fastest"
+                       cache-config-file="cache-config.json">
+    </platinum-sw-cache>
+  </platinum-sw-register>
+        
+  <script src="js/app.js" async></script>
+  
 </body>
-
 </html>

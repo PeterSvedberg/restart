@@ -1,0 +1,166 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="data-surface">
+  <script src="../jspm_packages/system.js"></script>
+  <script src="../config.js"></script>
+
+  <script>
+  'use strict';
+  
+  (function() {
+    class DataSurface {
+      beforeRegister() {
+        this.is = 'data-surface';
+        
+        this.properties = {
+          actionables: {
+            type: Array,
+            notify: true,
+            value: () => []
+          },
+          
+          selectedActionable: {
+            type: Object,
+            notify: true,
+            value: () => {}
+          },
+          
+          clientActionHandler: {
+            type: Object,
+            notify: false,
+            value: () => {}
+          }
+        };       
+
+      }   
+      
+      _importClientActionHandler(frontend) {
+        if (frontend) {
+          System.import('../js/clientActionHandler.js').then(function(actionHandler) {
+            frontend.clientActionHandler = actionHandler;
+            frontend._setUpActionEventListeners();
+            actionHandler.init(frontend);
+          }, function(error) {
+               console.log(error);
+          });
+        } else {
+          console.log('no frontend');
+        }
+      }
+      
+      _setUpActionEventListeners() {
+        // One view-facing event listener for each action
+        addEventListener('create-actionable-action', e => {
+          this.clientActionHandler.createActionable(e.detail.title);
+        });
+        addEventListener('add-container-action', e => {
+          this.clientActionHandler.createContainer(e.detail.actionableId, e.detail.name);
+        });
+        addEventListener('actionable-name-change-action', e => {
+          this.clientActionHandler.changeActionableName(e.detail.actionableId, e.detail.name);
+        });
+        addEventListener('container-name-change-action', e => {
+          this.clientActionHandler.changeContainerName(e.detail.actionableId, e.detail.containerId, e.detail.name);
+        });
+        addEventListener('container-link-change-action', e => {
+          this.clientActionHandler.changeContainerLink(e.detail.actionableId, e.detail.containerId, e.detail.link);
+        });
+        addEventListener('actionable-text-change-action', e => {
+          this.clientActionHandler.changeActionableText(e.detail.actionableId, e.detail.text);
+        });
+        addEventListener('delete-actionable-action', e => {
+          this.clientActionHandler.deleteActionable(e.detail.actionableId);
+        });
+        addEventListener('delete-container-action', e => {
+          this.clientActionHandler.deleteContainer(e.detail.actionableId, e.detail.containerId);
+        });
+      }
+      
+      ready() {
+        this._importClientActionHandler(this);
+        console.log('Data surface is ready');
+      }
+      
+      detached() {
+        console.log('detached data-surface');
+        // We need a better way to remove the event listeners when the app closes?
+        removeEventListener(this.actionTypes.CREATE_ACTIONABLE, () => {
+          console.log('removeEventListener, create-actionable-action');
+        });
+      }
+      
+      initialData(actionables, actionable) {
+        this.set('actionables', actionables);
+        this.set('selectedActionable', actionable);
+      }
+      
+      createdActionable(actionables, actionable) {
+        console.log('data-surface createdActionable ' + actionable);
+        this.set('actionables', actionables);
+        this.set('selectedActionable', actionable);
+        window.location.hash = `!${actionable.id}`;
+        this.fire('navigation-event', {'bubbles': false});
+      }
+      
+      createdContainer(actionable) {
+        if (this.selectedActionable.id !== actionable.id) {
+          console.log('Actionable id mismatch on add container action');
+          return;
+        }
+        console.log('createdActionable ' + actionable);
+        this.set('selectedActionable', actionable);
+      }
+        
+      changedActionableName(actionable) {
+        console.log('changedActionableName ' + actionable);
+        this.set('selectedActionable', actionable);
+      }
+        
+      changedContainerName(actionable) {
+        console.log('changedContainerName ' + actionable);
+        this.set('selectedActionable', actionable);
+      }
+        
+      changedContainerLink(actionable) {
+        console.log('changedContainerLink ' + actionable);
+        this.set('selectedActionable', actionable);
+      }
+        
+      changedActionableText(actionable) {
+        console.log('changedActionableText ' + actionable);
+        this.set('selectedActionable', actionable);
+      }
+        
+      deletedActionable(actionables, actionable) {
+        console.log('deletedActionable ' + actionable.name);
+        this.set('actionables', actionables);
+        if (actionable.id === this.selectedActionable.id) {
+          console.log('TODO Remove item from history.');
+          window.history.back();
+          this.fire('navigation-event', {'bubbles': false});
+        } else {
+          console.log('deletedActionable ' + actionable.name);
+        }
+      }
+      
+      deletedContainer(actionable) {
+        if (actionable.id === this.selectedActionable.id) {
+          console.log('deletedContainer ' + actionable);
+          this.set('selectedActionable', actionable);
+        } else {
+          console.log('deleteContainer on actionable ' + actionable.name);
+        }
+      }
+    }
+    
+    new Polymer(DataSurface);
+    
+  })();
+</script>
+</dom-module>
+

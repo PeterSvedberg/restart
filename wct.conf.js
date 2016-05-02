@@ -1,7 +1,7 @@
 var path = require('path');
 
 var ret = {
-  'suites': ['app/test'],
+  'suites': ['test'],
   'webserver': {
     'pathMappings': []
   }

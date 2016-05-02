@@ -1,0 +1,219 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="actionables-list">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        height: 100%;
+        background-color: var(--primary-background-color);
+      }
+      
+      paper-scroll-header-panel {
+        height: 100%;
+      }
+      
+      iron-list {
+        height: 100%;
+      }
+      
+      .actionables-toolbar {
+        background-color: var(--primary-background-color);
+        border-bottom: 1px solid var(--divider-color);
+        height: 65px;
+      }
+      
+      .actionables-title {
+        color: var(--dark-primary-color);
+        font-size: 24px;
+        font-weight: 300;
+      }
+
+      .item {
+        @apply(--layout-horizontal);
+        padding: 8px 0px 8px 16px;
+        background-color: var(--primary-background-color);
+        border-bottom: 1px solid var(--light-divider-color);
+        font-weight: 300;
+      }
+  
+      .item:focus {
+        outline: 0;
+      }
+
+      .item.active {
+      }
+
+      .actionable-name {
+        @apply(--layout-flex);
+        color: var(--primary-text-color);
+        font-size: 18px;
+        text-decoration: none;
+      }
+      
+      .item.active .actionable-name {
+        color: var(--dark-primary-color);
+        font-weight: normal;
+      }
+
+      .delete {
+        margin-right: 24px;
+        color: var(--dark-primary-color);
+        display: none;
+      }
+      
+      .item.active .delete {
+        display: inline;
+      }
+
+      .item.active .delete:hover {
+        color: var(--accent-color);
+      }
+      
+    </style>
+
+    <paper-scroll-header-panel scroll-away-topbar condenses>
+      <paper-toolbar class="actionables-toolbar">
+        <div class="actionables-title">Lists</div>
+        <span class="flex"></span>
+        <paper-icon-button icon="search"></paper-icon-button>
+      </paper-toolbar>
+      <iron-list id="ironList" items="{{actionables}}" selection-enabled
+                 selected-item="{{selectedActionable}}">
+        <template>
+          <div>
+            <div id$="[[item.id]]" class$="[[_computeClass(selected)]]">
+              <span class="actionable-name">{{item.title}}</span>
+              <iron-icon icon="remove" class="delete" on-tap="_onDelete"></iron-icon>
+            </div>
+          </div>
+        </template>
+      </iron-list>
+    </paper-scroll-header-panel>
+  </template>
+  
+  <script>
+    'use strict';
+    
+    (function() {
+      class ActionablesList {
+        beforeRegister() {
+          this.is = 'actionables-list';
+  
+          this.properties = {
+            actionables: {
+              type: Array,
+              value: () => [],
+              notify: true
+            },
+    
+            selectedActionable: {
+              type: Object,
+              value: () => {},
+              notify: true,
+              observer: '_selectedActionableChanged'
+            },
+            
+            idFromHash: {
+              type: String
+            },
+            
+            navigationInProgress: false
+          };         
+        }
+        
+        attached() {
+          addEventListener('hashchange', () => {
+            // we want to bypass a window.location.hash set in
+            // _selectedActionableChanged()
+            if (!this.navigationInProgress) {
+              if (this._setIdFromHash()) {
+                this._loadActionable();
+              }
+            } else {
+              this.navigationInProgress = false;
+            }
+          });
+          addEventListener('navigation-event', () => {
+            this.$.ironList.clearSelection();
+            this.navigationInProgress = false;
+            this._handleNavigationEvent();
+          });
+        }
+        
+        /*the logic here exist only to set window.location.hash when the selection
+          originates from the list*/
+        _selectedActionableChanged() {
+          // only selection in the list starts with a deselect
+          if (this.selectedActionable === null) {
+            // use it as signal
+            this.navigationInProgress = true;
+            return;
+          }
+          if (this.navigationInProgress) {
+            this._handleNavigationEvent();
+          }
+        }
+        
+        _handleNavigationEvent() {
+          if (!this.selectedActionable) {
+            return;
+          }
+          this.idFromHash = this.selectedActionable.id;
+          window.location.hash = `!${this.selectedActionable.id}`; 
+        }
+        
+        _setIdFromHash() {
+          var hash = window.location.hash;
+          if (hash.length < 3) {
+            return false;
+          }
+          this.idFromHash = hash.substring(2, hash.length);
+          return true;
+        }
+        
+        _loadActionable() {
+          for (let a of this.actionables) {
+            console.log(a);
+            if (a.id === this.idFromHash) {
+              this.$.ironList.selectItem(a);
+              this.navigationInProgress = false;
+              return;
+            }
+          }
+          console.log('TODO could not find actionable with id ' + this.idFromHash);
+        }
+      
+        _computeClass(isSelected) {
+          var classes = 'item';
+          if (isSelected) {
+            classes += ' active';
+          }
+          return classes;
+        }
+        
+        _onDelete(e) {
+          e.stopPropagation();
+          this.navigationInProgress = false;
+          this.fire('delete-actionable-action', {'actionableId': this.selectedActionable.id});
+        }
+
+      }
+      
+      new Polymer(ActionablesList);
+      
+    })();
+  </script>
+</dom-module>

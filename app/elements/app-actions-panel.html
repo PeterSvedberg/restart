@@ -1,0 +1,84 @@
+<!--
+@license
+The MIT License applies unless otherwise noted. See LICENSE.md for details.
+Copyright (c) 2015 Peter Svedberg.
+-->
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="app-actions-panel">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        height: 100%;
+        background-color: var(--primary-background-color);
+      }
+      
+      .toolbar {
+        background-color: var(--primary-background-color);
+        border-bottom: 1px solid var(--divider-color);
+      }
+      
+      .more-title {
+        color: var(--dark-primary-color);
+        font-size: 24px;
+        font-weight: 300;
+      }
+
+      .panel {
+        @apply(--layout-flex);        
+        margin: 16px;
+        color: var(--primary-text-color);
+      }
+
+    </style>
+    
+    <paper-scroll-header-panel scroll-away-topbar>
+      <paper-toolbar class="toolbar">
+        <div class="more-title">App</div>
+        <span class="flex"></span>
+        <paper-icon-button icon="face"></paper-icon-button>
+        <paper-icon-button icon="settings"></paper-icon-button>
+      </paper-toolbar>  
+      <div class="panel">
+        <h3>This panel is superfluous</h3>
+        <p>So, let's use it to explain this little project. It started as an exploratory
+          foray into Polymer and Web Component land. I have another project which is looking
+          for a new frontend implementation language, hence this projects name on github:
+          <a href="https://github.com/PeterSvedberg/restart">restart</a>.
+          The code is free to use.
+        </p>
+      </div>
+    </paper-scroll-header-panel>
+
+  </template>
+  
+  <script>
+    'use strict';
+    
+    (function() {
+      class AppActionsPanel {
+        beforeRegister() {
+          this.is = 'app-actions-panel';
+  
+          this.properties = {
+            user: {
+              type: String,
+              value: 'Anonymous',
+              notify: true
+            }
+          };
+        }        
+      }
+      
+      new Polymer(AppActionsPanel);
+      
+    })();
+  </script>
+</dom-module>
