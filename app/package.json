@@ -2,7 +2,7 @@
   "private": true,
   "jspm": {
     "dependencies": {
-      "firebase": "github:firebase/firebase-bower@^2.4.1",
+      "firebase": "github:firebase/firebase-bower@^2.4.2",
       "immutable": "npm:immutable@^3.7.6"
     },
     "devDependencies": {

@@ -17,7 +17,7 @@ System.config({
     "babel": "npm:babel-core@5.8.35",
     "babel-runtime": "npm:babel-runtime@5.8.35",
     "core-js": "npm:core-js@1.2.6",
-    "firebase": "github:firebase/firebase-bower@2.4.1",
+    "firebase": "github:firebase/firebase-bower@2.4.2",
     "immutable": "npm:immutable@3.7.6",
     "lodash": "npm:lodash@4.6.1",
     "github:jspm/nodelibs-assert@0.1.0": {
