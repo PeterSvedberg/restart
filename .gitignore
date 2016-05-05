@@ -1,6 +1,0 @@
-node_modules
-dist
-app/bower_components
-app/jspm_packages
-*.tmp
-*.komodoproject
