@@ -12,7 +12,7 @@ var webComponentsSupported = ('registerElement' in document &&
 if (!webComponentsSupported) {
   var polyfill = document.createElement('script');
   polyfill.async = true;
-  polyfill.src = 'bower_components/webcomponentsjs/webcomponents-lite.min.js';
+  polyfill.src = 'app/bower_components/webcomponentsjs/webcomponents-lite.min.js';
   polyfill.onload = () => {
     console.log('Polyfill loaded');
    };

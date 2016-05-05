@@ -11,5 +11,26 @@
   "devDependencies": {
     "web-component-tester": "^4.0.0",
     "test-fixture": "PolymerElements/test-fixture#^1.0.0"
-  }
+  },
+  "homepage": "https://github.com/PeterSvedberg/Restart",
+  "authors": [
+    "PeterSvedberg <peter.svedberg@one-360.com>"
+  ],
+  "description": "Restarting operatnl client",
+  "main": "",
+  "keywords": [
+    "progressive",
+    "polymer",
+    "material",
+    "offline"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ]
 }
