@@ -93,11 +93,9 @@ Copyright (c) 2015 Peter Svedberg.
       <iron-list id="ironList" items="{{actionables}}" selection-enabled
                  selected-item="{{selectedActionable}}">
         <template>
-          <div>
-            <div id$="[[item.id]]" class$="[[_computeClass(selected)]]">
-              <span class="actionable-name">{{item.title}}</span>
-              <iron-icon icon="remove" class="delete" on-tap="_onDelete"></iron-icon>
-            </div>
+          <div id$="[[item.id]]" class$="[[_computeClass(selected)]]">
+            <span class="actionable-name">{{item.title}}</span>
+            <iron-icon icon="remove" class="delete" on-tap="_onDelete"></iron-icon>
           </div>
         </template>
       </iron-list>
@@ -138,16 +136,20 @@ Copyright (c) 2015 Peter Svedberg.
           addEventListener('hashchange', () => {
             // we want to bypass a window.location.hash set in
             // _selectedActionableChanged()
+        	console.log('hashchange');
             if (!this.navigationInProgress) {
               if (this._setIdFromHash()) {
-                this._loadActionable();
+              	console.log('hashchange');
+      //          this.$.ironList.clearSelection();
+               this._loadActionable();
               }
             } else {
               this.navigationInProgress = false;
             }
           });
           addEventListener('navigation-event', () => {
-            this.$.ironList.clearSelection();
+        	console.log('navigation-event');
+           // this.$.ironList.clearSelection();
             this.navigationInProgress = false;
             this._handleNavigationEvent();
           });
@@ -157,6 +159,7 @@ Copyright (c) 2015 Peter Svedberg.
           originates from the list*/
         _selectedActionableChanged() {
           // only selection in the list starts with a deselect
+       	console.log('_selectedActionableChanged');
           if (this.selectedActionable === null) {
             // use it as signal
             this.navigationInProgress = true;
@@ -168,11 +171,13 @@ Copyright (c) 2015 Peter Svedberg.
         }
         
         _handleNavigationEvent() {
+        	console.log('_handleNavigationEvent');
           if (!this.selectedActionable) {
             return;
           }
           this.idFromHash = this.selectedActionable.id;
           window.location.hash = `!${this.selectedActionable.id}`; 
+      	console.log('_handleNavigationEvent');
         }
         
         _setIdFromHash() {
@@ -186,9 +191,9 @@ Copyright (c) 2015 Peter Svedberg.
         
         _loadActionable() {
           for (let a of this.actionables) {
-            console.log(a);
             if (a.id === this.idFromHash) {
-              this.$.ironList.selectItem(a);
+              this.selectedActionable = a;
+          	console.log('_loadActionable');
               this.navigationInProgress = false;
               return;
             }
@@ -201,6 +206,7 @@ Copyright (c) 2015 Peter Svedberg.
           if (isSelected) {
             classes += ' active';
           }
+          console.log('_computeClass, classes ' + classes + ', isSelected ' + isSelected);
           return classes;
         }
         

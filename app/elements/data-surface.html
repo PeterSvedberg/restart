@@ -39,18 +39,15 @@ Copyright (c) 2015 Peter Svedberg.
 
       }   
       
-      _importClientActionHandler(frontend) {
-        if (frontend) {
-          System.import('../js/clientActionHandler.js').then(function(actionHandler) {
-            frontend.clientActionHandler = actionHandler;
-            frontend._setUpActionEventListeners();
-            actionHandler.init(frontend);
-          }, function(error) {
-               console.log(error);
-          });
-        } else {
-          console.log('no frontend');
-        }
+      _importClientActionHandler(datasurface) {
+         System.import('../js/clientActionHandler.js').then(function(actionHandler) {
+           datasurface.clientActionHandler = actionHandler;
+           datasurface._setUpActionEventListeners();
+           actionHandler.init(datasurface);
+           datasurface.fire('hashchange', {'bubbles': false});
+         }, function(error) {
+              console.log(error);
+         });
       }
       
       _setUpActionEventListeners() {
